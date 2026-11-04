@@ -43,6 +43,7 @@ export async function openBillingPortal() {
 
   const portal = await stripeRequest<{ url: string }>("POST", "billing_portal/sessions", {
     customer: data.stripe_customer_id,
+    configuration: process.env.STRIPE_PORTAL_CONFIGURATION || undefined,
     return_url: `${await origin()}/app/abbonamento`,
   });
   redirect(portal.url);
