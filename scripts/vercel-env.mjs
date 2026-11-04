@@ -24,22 +24,29 @@ const env = readEnv();
 
 // Il comando "vercel" sta nella cartella dei programmi globali di npm,
 // che non sempre è nel percorso del terminale: lo si cerca lì direttamente.
+// Se non c'è in nessuna cartella nota, la si esegue al volo con npx.
+const WIN = process.platform === "win32";
+const VERCEL_VERSION = "65.11.0";
+
 function findVercel() {
-  const prefix = spawnSync("npm", ["prefix", "-g"], { encoding: "utf8", shell: process.platform === "win32" }).stdout.trim();
-  const candidate = join(prefix, process.platform === "win32" ? "vercel.cmd" : "bin/vercel");
-  return prefix && existsSync(candidate) ? candidate : null;
+  const prefix = spawnSync("npm", ["prefix", "-g"], { encoding: "utf8", shell: WIN }).stdout?.trim();
+  const candidates = WIN
+    ? [prefix && join(prefix, "vercel.cmd"), process.env.APPDATA && join(process.env.APPDATA, "npm", "vercel.cmd")]
+    : [prefix && join(prefix, "bin", "vercel")];
+  const found = candidates.find((c) => c && existsSync(c));
+  if (found) return { command: WIN ? `"${found}"` : found, prefixArgs: [] };
+  return { command: "npx", prefixArgs: ["--yes", `vercel@${VERCEL_VERSION}`] };
 }
-const vercelBin = findVercel();
-if (!vercelBin) {
-  console.error('✗ Non trovo la CLI di Vercel. Installala con: npm install --global vercel');
+
+const { command, prefixArgs } = findVercel();
+const vercel = (args, input) => spawnSync(command, [...prefixArgs, ...args], { input, encoding: "utf8", shell: WIN });
+
+const check = vercel(["whoami"]);
+if (check.status !== 0) {
+  console.error(`✗ La CLI di Vercel non risponde o non hai fatto l'accesso.\n  Prova: npx vercel login\n  Dettaglio: ${(check.stderr || check.stdout).trim()}`);
   process.exit(1);
 }
-const vercel = (args, input) =>
-  spawnSync(process.platform === "win32" ? `"${vercelBin}"` : vercelBin, args, {
-    input,
-    encoding: "utf8",
-    shell: process.platform === "win32",
-  });
+console.log(`Collegato a Vercel come ${check.stdout.trim().split("\n").pop()}\n`);
 
 let added = 0;
 for (const { name, sensitive } of KEYS) {
