@@ -44,6 +44,7 @@ export default function Home() {
         <nav aria-label="Principale" className="flex items-center gap-6 text-sm">
           <a href="#come-funziona" className="hidden text-ink-soft hover:text-ink md:inline">Come funziona</a>
           <a href="#prezzi" className="hidden text-ink-soft hover:text-ink md:inline">Prezzi</a>
+          <Link href="/accedi" className="text-ink-soft hover:text-ink">Accedi</Link>
           <Link href="/demo" className="rounded-full bg-ink px-4 py-2 font-medium text-white hover:bg-bottle-dark">
             Prova la demo
           </Link>
