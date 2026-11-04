@@ -290,7 +290,7 @@ function Confirmation({ booking, onAnother }: { booking: Booking; onAnother: () 
     const ics = [
       "BEGIN:VCALENDAR",
       "VERSION:2.0",
-      "PRODID:-//SmartBooking AI//IT",
+      "PRODID:-//SmartBooking//IT",
       "BEGIN:VEVENT",
       `UID:${booking.id}@smartbooking`,
       `DTSTAMP:${stamp(new Date())}`,

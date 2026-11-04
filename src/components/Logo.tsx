@@ -10,7 +10,7 @@ export function Logo({ className = "" }: { className?: string }) {
           <rect key={x} x={x - 1} y="10" width="2.4" height={x === 13 ? 12 : 9} rx="1.2" className={x === 13 ? "fill-cherry" : "fill-bottle"} />
         ))}
       </svg>
-      SmartBooking AI
+      SmartBooking
     </Link>
   );
 }

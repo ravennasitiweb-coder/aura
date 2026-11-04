@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { OnboardingForm } from "./OnboardingForm";
 
-export const metadata: Metadata = { title: "Imposta il tuo salone — SmartBooking AI" };
+export const metadata: Metadata = { title: "Imposta il tuo salone — SmartBooking" };
 
 export default function OnboardingPage() {
   return (

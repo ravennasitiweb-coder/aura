@@ -15,7 +15,7 @@ export default function PublicBookingPage({ params }: PageProps<"/p/[slug]">) {
       </Suspense>
       <footer className="mx-auto flex max-w-2xl justify-center gap-4 px-4 pb-10 pt-4 text-xs text-chrome">
         <span>
-          Prenotazioni con <Link href="/" className="underline">SmartBooking AI</Link>
+          Prenotazioni con <Link href="/" className="underline">SmartBooking</Link>
         </span>
         <Link href="/privacy" className="underline">Privacy</Link>
       </footer>

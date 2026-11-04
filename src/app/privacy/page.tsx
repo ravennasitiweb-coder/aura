@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Logo } from "@/components/Logo";
 
-export const metadata: Metadata = { title: "Informativa sulla privacy — SmartBooking AI" };
+export const metadata: Metadata = { title: "Informativa sulla privacy — SmartBooking" };
 
 // ATTENZIONE: testo di partenza da far verificare a un consulente privacy
 // prima del lancio commerciale (titolare, responsabili, tempi di conservazione).
@@ -13,12 +13,12 @@ export default function PrivacyPage() {
       <h1 className="mt-10 font-display text-3xl font-bold tracking-tight">Informativa sulla privacy</h1>
       <div className="mt-6 space-y-5 leading-relaxed text-ink-soft [&_h2]:mt-8 [&_h2]:font-semibold [&_h2]:text-ink">
         <p>
-          Questa informativa riguarda i dati che inserisci quando prenoti un appuntamento in un salone tramite SmartBooking AI.
+          Questa informativa riguarda i dati che inserisci quando prenoti un appuntamento in un salone tramite SmartBooking.
         </p>
 
         <h2>Chi tratta i tuoi dati</h2>
         <p>
-          Il <strong>titolare del trattamento</strong> è il salone presso cui prenoti. SmartBooking AI fornisce al salone il
+          Il <strong>titolare del trattamento</strong> è il salone presso cui prenoti. SmartBooking fornisce al salone il
           servizio di prenotazione e tratta i dati per suo conto, come <strong>responsabile del trattamento</strong>.
         </p>
 

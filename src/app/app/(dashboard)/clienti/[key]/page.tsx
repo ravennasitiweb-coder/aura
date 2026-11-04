@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { formatDateTime, getCustomerHistory, localDay } from "@/lib/customers";
 import { ForgetCustomer } from "./ForgetCustomer";
 
-export const metadata: Metadata = { title: "Cliente — SmartBooking AI" };
+export const metadata: Metadata = { title: "Cliente — SmartBooking" };
 
 const STATUS_LABEL = {
   confirmed: "Confermato",

@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/app/ui";
 import { getCurrentSalon } from "@/lib/auth";
 import { SettingsForm } from "./SettingsForm";
 
-export const metadata: Metadata = { title: "Impostazioni — SmartBooking AI" };
+export const metadata: Metadata = { title: "Impostazioni — SmartBooking" };
 
 export default function SettingsPage() {
   return (

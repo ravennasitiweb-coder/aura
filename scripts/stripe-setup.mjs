@@ -74,7 +74,7 @@ for (const plan of plans) {
       tax_behavior: "exclusive",
       lookup_key: lookupKey,
       transfer_lookup_key: true,
-      product_data: { name: `SmartBooking AI ${plan.name}` },
+      product_data: { name: `SmartBooking ${plan.name}` },
     });
     console.log(`✓ Piano ${plan.name}: creato a ${plan.cents / 100} €/mese (${price.id})`);
   }
@@ -92,7 +92,7 @@ if (existing && env.STRIPE_WEBHOOK_SECRET) {
   const created = await stripe("POST", "webhook_endpoints", {
     url: WEBHOOK_URL,
     enabled_events: WEBHOOK_EVENTS,
-    description: "SmartBooking AI: abbonamenti",
+    description: "SmartBooking: abbonamenti",
   });
   updates.STRIPE_WEBHOOK_SECRET = created.secret;
   console.log(`✓ Webhook: creato per ${WEBHOOK_URL}`);
@@ -103,7 +103,7 @@ const configs = await stripe("GET", "billing_portal/configurations", { limit: 10
 let portal = configs.data.find((c) => c.metadata?.app === "smartbooking");
 if (!portal) {
   portal = await stripe("POST", "billing_portal/configurations", {
-    business_profile: { headline: "Gestisci il tuo abbonamento SmartBooking AI" },
+    business_profile: { headline: "Gestisci il tuo abbonamento SmartBooking" },
     features: {
       invoice_history: { enabled: true },
       payment_method_update: { enabled: true },

@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/app/ui";
 import { getCurrentSalon } from "@/lib/auth";
 import { NewStaffForm, StaffRow, type StaffItem } from "./StaffForms";
 
-export const metadata: Metadata = { title: "Collaboratori — SmartBooking AI" };
+export const metadata: Metadata = { title: "Collaboratori — SmartBooking" };
 
 export default function StaffPage() {
   return (

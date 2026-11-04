@@ -5,7 +5,7 @@ import { getCurrentSalon } from "@/lib/auth";
 import { shortTime } from "@/lib/format";
 import { HoursForm, type DayHours } from "./HoursForm";
 
-export const metadata: Metadata = { title: "Orari di apertura — SmartBooking AI" };
+export const metadata: Metadata = { title: "Orari di apertura — SmartBooking" };
 
 // Proposta iniziale tipica di un salone italiano: chiuso domenica e lunedì,
 // pausa pranzo 13–15. Viene salvata solo quando premi "Salva orari".

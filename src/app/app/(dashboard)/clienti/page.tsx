@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { PageHeader } from "@/components/app/ui";
 import { formatDate, listCustomers } from "@/lib/customers";
 
-export const metadata: Metadata = { title: "Clienti — SmartBooking AI" };
+export const metadata: Metadata = { title: "Clienti — SmartBooking" };
 
 export default function CustomersPage({ searchParams }: PageProps<"/app/clienti">) {
   return (

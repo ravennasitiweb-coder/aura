@@ -25,7 +25,7 @@ const AUDIENCES = [
 ];
 
 const FAQ = [
-  { q: "Devo installare qualcosa?", a: "No. SmartBooking AI funziona dal browser di computer, tablet e telefono." },
+  { q: "Devo installare qualcosa?", a: "No. SmartBooking funziona dal browser di computer, tablet e telefono." },
   { q: "Come prenotano i miei clienti?", a: "Dalla pagina del tuo salone, che condividi su Instagram, Google e WhatsApp: scelgono servizio, giorno e orario tra quelli liberi e lasciano nome e telefono." },
   { q: "Posso continuare a prendere appuntamenti al telefono?", a: "Sì. Li inserisci in agenda in pochi secondi e il sistema li considera come tutti gli altri." },
   { q: "C'è un assistente AI?", a: "È in arrivo: risponderà ai clienti in chat usando gli stessi orari liberi della tua agenda. Lo attiveremo solo con un fornitore che tratta i dati in Europa." },
@@ -74,7 +74,7 @@ export default function Home() {
         <section className="border-y border-line bg-white">
           <p className="mx-auto max-w-4xl px-4 py-14 text-center font-display text-2xl leading-snug sm:text-3xl">
             Il telefono che squilla durante una piega. I messaggi su WhatsApp alle undici di sera.
-            Due clienti sullo stesso orario. Da oggi ci pensa SmartBooking AI.
+            Due clienti sullo stesso orario. Da oggi ci pensa SmartBooking.
           </p>
         </section>
 
@@ -203,7 +203,7 @@ export default function Home() {
         <Logo className="text-ink" />
         <div className="flex gap-6">
           <Link href="/privacy" className="hover:text-ink">Privacy</Link>
-          <span>© 2026 SmartBooking AI</span>
+          <span>© 2026 SmartBooking</span>
         </div>
       </footer>
     </>

@@ -13,7 +13,7 @@ const figtree = Figtree({
 });
 
 export const metadata: Metadata = {
-  title: "SmartBooking AI — Prenotazioni online per saloni",
+  title: "SmartBooking — Prenotazioni online per saloni",
   description:
     "Agenda online e pagina di prenotazione per parrucchieri, barbieri ed estetisti: i clienti prenotano da soli, 24 ore su 24.",
 };

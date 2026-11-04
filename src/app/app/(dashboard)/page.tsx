@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { CopyLink } from "@/components/app/CopyLink";
 import { getCurrentSalon } from "@/lib/auth";
 
-export const metadata: Metadata = { title: "Panoramica — SmartBooking AI" };
+export const metadata: Metadata = { title: "Panoramica — SmartBooking" };
 
 export default function OverviewPage() {
   // La parte che dipende dall'utente si carica dentro <Suspense>

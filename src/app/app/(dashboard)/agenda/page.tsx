@@ -5,7 +5,7 @@ import { getAgendaDay, getAgendaWeek } from "@/lib/agenda-data";
 import { AgendaBoard } from "./AgendaBoard";
 import { WeekBoard } from "./WeekBoard";
 
-export const metadata: Metadata = { title: "Agenda — SmartBooking AI" };
+export const metadata: Metadata = { title: "Agenda — SmartBooking" };
 
 export default function AgendaPage({ searchParams }: PageProps<"/app/agenda">) {
   return (

@@ -6,7 +6,7 @@ import { getCurrentSalon } from "@/lib/auth";
 import { PLANS } from "@/lib/plans";
 import { priceIdFor, stripeEnabled } from "@/lib/stripe";
 
-export const metadata: Metadata = { title: "Abbonamento — SmartBooking AI" };
+export const metadata: Metadata = { title: "Abbonamento — SmartBooking" };
 
 const STATUS_LABEL: Record<string, string> = {
   active: "Attivo",

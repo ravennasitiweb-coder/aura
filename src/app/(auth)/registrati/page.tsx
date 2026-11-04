@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { signUp } from "../actions";
 
-export const metadata: Metadata = { title: "Crea il tuo account — SmartBooking AI" };
+export const metadata: Metadata = { title: "Crea il tuo account — SmartBooking" };
 
 export default function SignUpPage() {
   return (

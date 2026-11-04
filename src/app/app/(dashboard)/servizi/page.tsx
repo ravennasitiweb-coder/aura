@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/app/ui";
 import { getCurrentSalon } from "@/lib/auth";
 import { NewServiceForm, ServiceRow, type ServiceItem } from "./ServiceForms";
 
-export const metadata: Metadata = { title: "Servizi — SmartBooking AI" };
+export const metadata: Metadata = { title: "Servizi — SmartBooking" };
 
 export default function ServicesPage() {
   return (
