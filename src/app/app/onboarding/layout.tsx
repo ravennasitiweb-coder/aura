@@ -1,7 +1,8 @@
 import { Logo } from "@/components/Logo";
 import { signOut } from "@/app/(auth)/actions";
 
-export default function AppLayout({ children }: LayoutProps<"/app">) {
+// Layout semplice, senza menu: qui l'utente non ha ancora un salone
+export default function OnboardingLayout({ children }: LayoutProps<"/app/onboarding">) {
   return (
     <div className="flex min-h-screen flex-col">
       <header className="border-b border-line bg-white">
