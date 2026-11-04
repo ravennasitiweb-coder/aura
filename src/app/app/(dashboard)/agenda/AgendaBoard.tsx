@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useActionState, useState } from "react";
+import { useActionState, useCallback, useState } from "react";
 import { setAppointmentStatus } from "@/app/app/agenda-actions";
 import { FormMessage } from "@/components/app/ui";
 import { addDays, formatLongDate, minutesToTime, type TimeRange } from "@/lib/agenda";
 import type { AgendaAppointment } from "@/lib/agenda-data";
-import { NewAppointmentForm } from "./NewAppointmentForm";
+import { AppointmentForm } from "./AppointmentForm";
 
 type Staff = { id: string; name: string; role_title: string | null; active: boolean };
 type Service = { id: string; name: string; duration_min: number; active: boolean };
@@ -41,7 +41,13 @@ export function AgendaBoard(props: AgendaProps) {
   const { date, today, appointments, staff, services, openRanges } = props;
   const router = useRouter();
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [editing, setEditing] = useState(false);
   const selected = appointments.find((a) => a.id === selectedId) ?? null;
+  const stopEditing = useCallback(() => setEditing(false), []);
+  const select = (id: string | null) => {
+    setSelectedId(id);
+    setEditing(false);
+  };
 
   // Colonne: collaboratori attivi, più chi ha appuntamenti quel giorno anche se disattivato
   const columns = staff.filter((s) => s.active || appointments.some((a) => a.staff_id === s.id));
@@ -148,7 +154,7 @@ export function AgendaBoard(props: AgendaProps) {
                           <button
                             key={a.id}
                             type="button"
-                            onClick={() => setSelectedId(a.id)}
+                            onClick={() => select(a.id)}
                             aria-pressed={selectedId === a.id}
                             className={`absolute inset-x-1.5 overflow-hidden rounded-lg border px-2 py-1 text-left text-xs ${
                               a.status === "cancelled"
@@ -177,17 +183,22 @@ export function AgendaBoard(props: AgendaProps) {
 
         {/* Pannello laterale: dettaglio o nuovo appuntamento */}
         <div className="space-y-4">
-          {selected && (
-            <AppointmentDetail
-              key={selected.id}
-              appointment={selected}
-              staffName={staff.find((s) => s.id === selected.staff_id)?.name ?? ""}
-              onClose={() => setSelectedId(null)}
-            />
+          {selected && editing ? (
+            <AppointmentForm key={`edit-${selected.id}`} {...props} editing={selected} onDone={stopEditing} />
+          ) : (
+            selected && (
+              <AppointmentDetail
+                key={selected.id}
+                appointment={selected}
+                staffName={staff.find((s) => s.id === selected.staff_id)?.name ?? ""}
+                onClose={() => select(null)}
+                onEdit={() => setEditing(true)}
+              />
+            )
           )}
-          {services.length > 0 && columns.length > 0 ? (
+          {editing ? null : services.length > 0 && columns.length > 0 ? (
             // key: il modulo riparte dal giorno mostrato quando cambi giorno in agenda
-            <NewAppointmentForm key={date} {...props} />
+            <AppointmentForm key={date} {...props} />
           ) : (
             columns.length > 0 && (
               <p className="rounded-2xl border border-dashed border-line p-5 text-sm text-ink-soft">
@@ -206,10 +217,12 @@ function AppointmentDetail({
   appointment: a,
   staffName,
   onClose,
+  onEdit,
 }: {
   appointment: AgendaAppointment;
   staffName: string;
   onClose: () => void;
+  onEdit: () => void;
 }) {
   const [state, action] = useActionState(setAppointmentStatus, {});
 
@@ -260,6 +273,9 @@ function AppointmentDetail({
         <input type="hidden" name="id" value={a.id} />
         {a.status === "confirmed" ? (
           <>
+            <button type="button" onClick={onEdit} className="rounded-full bg-bottle px-4 py-2 text-sm font-semibold text-white hover:bg-bottle-dark">
+              Sposta o modifica
+            </button>
             <StatusButton status="completed" label="Completato" />
             <StatusButton status="no_show" label="Non si è presentato" />
             <button

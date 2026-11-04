@@ -49,7 +49,9 @@ export async function getAgendaDay(date: string) {
   };
 }
 
-export async function getFreeSlotsFor(date: string, serviceId: string, staffId: string | null) {
+// `ignoreAppointmentId`: in modifica, l'appuntamento che si sta spostando
+// non deve occupare il proprio orario
+export async function getFreeSlotsFor(date: string, serviceId: string, staffId: string | null, ignoreAppointmentId?: string) {
   const day = await getAgendaDay(date);
   const service = day.services.find((s) => s.id === serviceId && s.active);
   if (!service) return [];
@@ -66,7 +68,7 @@ export async function getFreeSlotsFor(date: string, serviceId: string, staffId: 
     openRanges: day.openRanges,
     staffIds,
     busy: day.appointments
-      .filter((a) => a.status !== "cancelled")
+      .filter((a) => a.status !== "cancelled" && a.id !== ignoreAppointmentId)
       .map((a) => ({ staffId: a.staff_id, start: a.start_min, end: a.end_min })),
     durationMin: service.duration_min,
     notBeforeMin: date === now.date ? now.minutes : 0,
