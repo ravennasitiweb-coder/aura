@@ -11,6 +11,7 @@ export type AgendaAppointment = {
   service_name: string;
   customer_name: string;
   customer_phone: string | null;
+  customer_email: string | null;
   notes: string | null;
   status: "confirmed" | "completed" | "cancelled" | "no_show";
   source: "manual" | "online" | "chatbot";

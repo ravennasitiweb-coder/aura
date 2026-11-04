@@ -241,6 +241,14 @@ function AppointmentDetail({
             </dd>
           </div>
         )}
+        {a.customer_email && (
+          <div className="flex gap-2">
+            <dt className="text-ink-soft">Email:</dt>
+            <dd className="min-w-0 truncate">
+              <a href={`mailto:${a.customer_email}`} className="text-bottle underline">{a.customer_email}</a>
+            </dd>
+          </div>
+        )}
         <div className="flex gap-2">
           <dt className="text-ink-soft">Origine:</dt>
           <dd>{SOURCE_LABEL[a.source]}</dd>

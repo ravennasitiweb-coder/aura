@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { CopyLink } from "@/components/app/CopyLink";
 import { getCurrentSalon } from "@/lib/auth";
 
 export const metadata: Metadata = { title: "Panoramica — SmartBooking AI" };
@@ -85,8 +86,16 @@ async function Overview() {
         <h2 className="font-semibold text-bottle-dark">La tua pagina di prenotazione</h2>
         <p className="mt-1 font-mono text-bottle">/p/{salon.slug}</p>
         <p className="mt-2 text-sm text-bottle-dark">
-          Quando il salone è completo, prepariamo l&apos;agenda e la pagina dove i clienti prenotano da soli o con l&apos;assistente.
+          {completed === steps.length
+            ? "I clienti possono già prenotare da soli. Mettila nella bio di Instagram, su Google e nel messaggio automatico di WhatsApp."
+            : "Completa i passi qui sopra: i clienti vedranno solo i servizi con almeno un collaboratore e gli orari di apertura impostati."}
         </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Link href={`/p/${salon.slug}`} target="_blank" className="rounded-full bg-bottle px-4 py-2 text-sm font-semibold text-white hover:bg-bottle-dark">
+            Apri la tua pagina
+          </Link>
+          <CopyLink path={`/p/${salon.slug}`} />
+        </div>
       </section>
     </div>
   );
