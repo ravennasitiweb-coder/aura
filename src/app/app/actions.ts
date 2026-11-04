@@ -53,6 +53,9 @@ export async function updateService(_prev: ActionState, formData: FormData): Pro
 export async function deleteService(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const { supabase, salon } = await requireOwner();
   const { error } = await supabase.from("services").delete().eq("id", str(formData, "id")).eq("salon_id", salon.id);
+  // 23503: ci sono appuntamenti collegati, il database impedisce l'eliminazione
+  if (error?.code === "23503")
+    return { error: "Ha già degli appuntamenti: togli la spunta a \"Prenotabile\" invece di eliminarlo." };
   if (error) return { error: GENERIC_ERROR };
   refresh();
   return { ok: "Servizio eliminato." };
@@ -109,6 +112,8 @@ export async function updateStaff(_prev: ActionState, formData: FormData): Promi
 export async function deleteStaff(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const { supabase, salon } = await requireOwner();
   const { error } = await supabase.from("staff").delete().eq("id", str(formData, "id")).eq("salon_id", salon.id);
+  if (error?.code === "23503")
+    return { error: "Ha già degli appuntamenti: togli la spunta a \"Riceve appuntamenti\" invece di eliminarlo." };
   if (error) return { error: GENERIC_ERROR };
   refresh();
   return { ok: "Collaboratore eliminato." };

@@ -71,6 +71,16 @@ async function Overview() {
         </ol>
       </section>
 
+      {completed === steps.length && (
+        <Link href="/app/agenda" className="flex items-center justify-between rounded-2xl bg-bottle p-6 text-white hover:bg-bottle-dark">
+          <span>
+            <span className="block font-display text-xl font-bold">Il salone è pronto</span>
+            <span className="text-mint">Apri l&apos;agenda e inserisci i tuoi appuntamenti.</span>
+          </span>
+          <span className="rounded-full bg-white px-5 py-2.5 font-semibold text-bottle">Apri l&apos;agenda</span>
+        </Link>
+      )}
+
       <section className="rounded-2xl bg-mint p-6">
         <h2 className="font-semibold text-bottle-dark">La tua pagina di prenotazione</h2>
         <p className="mt-1 font-mono text-bottle">/p/{salon.slug}</p>
