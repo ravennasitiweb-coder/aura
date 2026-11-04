@@ -92,6 +92,8 @@ export function BookingFlow({ slug, info, today }: { slug: string; info: PublicS
                 <input
                   type="radio"
                   name="service"
+                  value={s.id}
+                  aria-label={`${s.name}, ${formatDuration(s.duration_min)}${s.price_cents > 0 ? `, ${formatPrice(s.price_cents)}` : ""}`}
                   checked={serviceId === s.id}
                   onChange={() => {
                     setServiceId(s.id);
