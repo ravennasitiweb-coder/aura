@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { addDays, computeFreeSlots, isValidDate, isoWeekday, nowInTimezone } from "./agenda.ts";
+import { addDays, computeFreeSlots, isValidDate, isoWeekday, nowInTimezone, startOfWeek } from "./agenda.ts";
 
 const t = (h: number, m = 0) => h * 60 + m;
 
@@ -48,6 +48,10 @@ test("date", () => {
   assert.equal(addDays("2026-12-31", 1), "2027-01-01");
   assert.equal(isoWeekday("2026-11-04"), 3, "4 novembre 2026 è mercoledì");
   assert.equal(isoWeekday("2026-11-08"), 7, "8 novembre 2026 è domenica");
+  assert.equal(startOfWeek("2026-11-04"), "2026-11-02", "la settimana inizia di lunedì");
+  assert.equal(startOfWeek("2026-11-08"), "2026-11-02", "la domenica appartiene alla settimana che finisce");
+  assert.equal(startOfWeek("2026-11-02"), "2026-11-02");
+  assert.equal(startOfWeek("2027-01-01"), "2026-12-28", "a cavallo d'anno");
 });
 
 test("ora legale: Roma è UTC+2 d'estate e UTC+1 d'inverno", () => {

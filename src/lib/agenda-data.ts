@@ -1,6 +1,6 @@
 import "server-only";
 import { getCurrentSalon } from "@/lib/auth";
-import { computeFreeSlots, isoWeekday, nowInTimezone, timeToMinutes, type TimeRange } from "@/lib/agenda";
+import { addDays, computeFreeSlots, isoWeekday, nowInTimezone, timeToMinutes, type TimeRange } from "@/lib/agenda";
 
 // Letture dal database per l'agenda. Il salone viene sempre dalla sessione.
 
@@ -51,6 +51,40 @@ export async function getAgendaDay(date: string) {
 
 // `ignoreAppointmentId`: in modifica, l'appuntamento che si sta spostando
 // non deve occupare il proprio orario
+export type WeekAppointment = {
+  day: string;
+  id: string;
+  staff_id: string;
+  service_name: string;
+  customer_name: string;
+  status: AgendaAppointment["status"];
+  source: AgendaAppointment["source"];
+  start_min: number;
+  end_min: number;
+};
+
+// Sette giorni da lunedì: appuntamenti, collaboratori e orari di tutta la settimana
+export async function getAgendaWeek(monday: string) {
+  const { supabase, salon } = await getCurrentSalon();
+  const [appointments, staff, hours] = await Promise.all([
+    supabase.rpc("agenda_range", { p_salon_id: salon.id, p_from: monday, p_to: addDays(monday, 6) }),
+    supabase.from("staff").select("id, name, active").eq("salon_id", salon.id).order("created_at"),
+    supabase.from("opening_hours").select("weekday, opens_at, closes_at").eq("salon_id", salon.id).order("opens_at"),
+  ]);
+  for (const r of [appointments, staff, hours]) {
+    if (r.error) throw new Error(`Impossibile leggere la settimana: ${r.error.message}`);
+  }
+  return {
+    appointments: (appointments.data ?? []) as WeekAppointment[],
+    staff: staff.data ?? [],
+    hours: (hours.data ?? []).map((h) => ({
+      weekday: h.weekday as number,
+      start: timeToMinutes(h.opens_at),
+      end: timeToMinutes(h.closes_at),
+    })),
+  };
+}
+
 export async function getFreeSlotsFor(date: string, serviceId: string, staffId: string | null, ignoreAppointmentId?: string) {
   const day = await getAgendaDay(date);
   const service = day.services.find((s) => s.id === serviceId && s.active);

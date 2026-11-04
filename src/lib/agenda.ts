@@ -57,6 +57,11 @@ export function isoWeekday(date: string) {
   return new Date(Date.UTC(y, m - 1, d)).getUTCDay() || 7;
 }
 
+// Lunedì della settimana che contiene `date`
+export function startOfWeek(date: string) {
+  return addDays(date, 1 - isoWeekday(date));
+}
+
 // Data di oggi e minuti attuali nel fuso del salone
 export function nowInTimezone(timeZone: string, now = new Date()) {
   const parts = Object.fromEntries(

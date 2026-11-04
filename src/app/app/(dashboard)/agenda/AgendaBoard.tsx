@@ -8,6 +8,7 @@ import { FormMessage } from "@/components/app/ui";
 import { addDays, formatLongDate, minutesToTime, type TimeRange } from "@/lib/agenda";
 import type { AgendaAppointment } from "@/lib/agenda-data";
 import { AppointmentForm } from "./AppointmentForm";
+import { ViewSwitch } from "./ViewSwitch";
 
 type Staff = { id: string; name: string; role_title: string | null; active: boolean };
 type Service = { id: string; name: string; duration_min: number; active: boolean };
@@ -85,6 +86,7 @@ export function AgendaBoard(props: AgendaProps) {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <ViewSwitch view="giorno" date={date} />
           <Link href={`/app/agenda?data=${addDays(date, -1)}`} className="rounded-full border border-line bg-white px-3 py-2 text-sm hover:border-ink" aria-label="Giorno precedente">
             ‹
           </Link>

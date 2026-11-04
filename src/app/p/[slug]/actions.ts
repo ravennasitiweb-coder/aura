@@ -1,6 +1,8 @@
 "use server";
 
+import { after } from "next/server";
 import type { FreeSlot } from "@/lib/agenda";
+import { emailEnabled, sendBookingConfirmation } from "@/lib/email";
 import { getPublicFreeSlots } from "@/lib/public-booking";
 import { createClient } from "@/lib/supabase/server";
 
@@ -50,5 +52,22 @@ export async function book(slug: string, formData: FormData): Promise<BookingRes
     if (error.code === "23P01") return { ok: false, slotTaken: true, error: "Qualcuno ha appena prenotato questo orario. Scegline un altro." };
     return { ok: false, slotTaken: error.code === "SB023" || error.code === "SB021", error: ERRORS[error.code] ?? "Non è stato possibile prenotare. Riprova tra poco." };
   }
-  return { ok: true, booking: data as Extract<BookingResult, { ok: true }>["booking"] };
+  const booking = data as Extract<BookingResult, { ok: true }>["booking"];
+
+  // Email di conferma: parte dopo la risposta, così il cliente non aspetta
+  const email = str(formData, "email");
+  if (email && emailEnabled()) {
+    after(() =>
+      sendBookingConfirmation({
+        to: email,
+        customerName: str(formData, "name"),
+        salonName: booking.salon_name,
+        serviceName: booking.service_name,
+        staffName: booking.staff_name,
+        startsAt: booking.starts_at,
+      }),
+    );
+  }
+
+  return { ok: true, booking };
 }

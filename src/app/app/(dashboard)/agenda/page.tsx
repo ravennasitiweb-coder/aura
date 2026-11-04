@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { isValidDate, nowInTimezone } from "@/lib/agenda";
-import { getAgendaDay } from "@/lib/agenda-data";
+import { isValidDate, nowInTimezone, startOfWeek } from "@/lib/agenda";
+import { getAgendaDay, getAgendaWeek } from "@/lib/agenda-data";
 import { AgendaBoard } from "./AgendaBoard";
+import { WeekBoard } from "./WeekBoard";
 
 export const metadata: Metadata = { title: "Agenda — SmartBooking AI" };
 
@@ -15,12 +16,18 @@ export default function AgendaPage({ searchParams }: PageProps<"/app/agenda">) {
 }
 
 async function Agenda({ searchParams }: { searchParams: PageProps<"/app/agenda">["searchParams"] }) {
-  const { data } = await searchParams;
+  const { data, vista } = await searchParams;
   const today = nowInTimezone("Europe/Rome").date;
   // Il giorno arriva dall'indirizzo (?data=2026-11-04); se manca o non è valido, oggi
   const date = typeof data === "string" && isValidDate(data) ? data : today;
-  const day = await getAgendaDay(date);
 
+  if (vista === "settimana") {
+    const monday = startOfWeek(date);
+    const week = await getAgendaWeek(monday);
+    return <WeekBoard monday={monday} today={today} {...week} />;
+  }
+
+  const day = await getAgendaDay(date);
   return (
     <AgendaBoard
       date={date}

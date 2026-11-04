@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { HeroDemo } from "@/components/landing/HeroDemo";
+import { PLANS } from "@/lib/plans";
 
 const STEPS = [
   { title: "Imposta il salone", text: "Inserisci servizi, durate, prezzi, collaboratori e orari. Bastano un quarto d'ora e il telefono." },
@@ -21,13 +22,6 @@ const AUDIENCES = [
   { title: "Parrucchieri", text: "Colori, pieghe e trattamenti lunghi con la loro durata reale, senza incastri impossibili." },
   { title: "Barbieri", text: "Slot da un quarto d'ora, taglio e barba con il barbiere giusto, la giornata sempre sotto controllo." },
   { title: "Estetisti", text: "Trattamenti viso e corpo con durate diverse, assegnati solo a chi li sa fare." },
-];
-
-// Prezzi previsti: da confermare prima della vendita (abbonamenti non ancora attivi)
-const PLANS = [
-  { name: "Solo", price: 19, text: "Per chi lavora da solo.", items: ["1 collaboratore", "Agenda online", "Pagina di prenotazione"] },
-  { name: "Salone", price: 39, text: "Il piano più scelto.", items: ["Fino a 5 collaboratori", "Agenda online", "Pagina di prenotazione", "In arrivo: assistente AI in chat"], highlight: true },
-  { name: "Studio", price: 69, text: "Per saloni grandi.", items: ["Collaboratori illimitati", "Agenda online", "Pagina di prenotazione", "In arrivo: assistente AI in chat"] },
 ];
 
 const FAQ = [

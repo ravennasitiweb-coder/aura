@@ -1,6 +1,7 @@
 "use server";
 
 import { refresh } from "next/cache";
+import { redirect } from "next/navigation";
 import { requireOwner } from "@/lib/auth";
 import { WEEKDAYS, parsePriceToCents } from "@/lib/format";
 import { slugify } from "@/lib/slug";
@@ -150,6 +151,16 @@ export async function saveOpeningHours(_prev: ActionState, formData: FormData): 
   if (error) return { error: GENERIC_ERROR };
   refresh();
   return { ok: "Orari salvati." };
+}
+
+// Clienti --------------------------------------------------------------
+
+export async function forgetCustomer(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  const { supabase, salon } = await requireOwner();
+  const { error } = await supabase.rpc("forget_customer", { p_salon_id: salon.id, p_customer_key: str(formData, "customer_key") });
+  if (error) return { error: GENERIC_ERROR };
+  // Dopo la cancellazione la scheda non esiste più: si torna all'elenco
+  redirect("/app/clienti");
 }
 
 // Impostazioni del salone ----------------------------------------------
