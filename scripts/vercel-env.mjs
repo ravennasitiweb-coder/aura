@@ -3,6 +3,8 @@
 // Uso:  npm run env:vercel
 // Le chiavi passano direttamente dal file a Vercel, senza comparire a schermo.
 import { spawnSync } from "node:child_process";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { readEnv } from "./env-file.mjs";
 
 const KEYS = [
@@ -19,8 +21,25 @@ const KEYS = [
 const TARGETS = ["production", "preview"];
 
 const env = readEnv();
+
+// Il comando "vercel" sta nella cartella dei programmi globali di npm,
+// che non sempre è nel percorso del terminale: lo si cerca lì direttamente.
+function findVercel() {
+  const prefix = spawnSync("npm", ["prefix", "-g"], { encoding: "utf8", shell: process.platform === "win32" }).stdout.trim();
+  const candidate = join(prefix, process.platform === "win32" ? "vercel.cmd" : "bin/vercel");
+  return prefix && existsSync(candidate) ? candidate : null;
+}
+const vercelBin = findVercel();
+if (!vercelBin) {
+  console.error('✗ Non trovo la CLI di Vercel. Installala con: npm install --global vercel');
+  process.exit(1);
+}
 const vercel = (args, input) =>
-  spawnSync("vercel", args, { input, encoding: "utf8", shell: process.platform === "win32" });
+  spawnSync(process.platform === "win32" ? `"${vercelBin}"` : vercelBin, args, {
+    input,
+    encoding: "utf8",
+    shell: process.platform === "win32",
+  });
 
 let added = 0;
 for (const { name, sensitive } of KEYS) {

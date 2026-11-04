@@ -9,7 +9,7 @@
     "lint": "eslint",
     "test": "node --test --disable-warning=MODULE_TYPELESS_PACKAGE_JSON src/lib/*.test.ts",
     "stripe:setup": "node scripts/stripe-setup.mjs",
-    "env:vercel": "node scripts/vercel-env.mjs"
+    "env:vercel": "node --no-deprecation scripts/vercel-env.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
