@@ -48,12 +48,12 @@ export function ChatPreview({
         <span className="grid h-9 w-9 place-items-center rounded-full bg-mint font-display font-bold text-bottle">A</span>
         <div className="flex-1 leading-tight">
           <p className="font-semibold">Assistente di Salone Aurora</p>
-          <p className="text-xs text-ink-soft">Così lo vedono i tuoi clienti</p>
+          <p className="text-xs text-ink-soft">Funzione in arrivo</p>
         </div>
       </header>
 
       <p className="bg-paper px-4 py-2 text-xs text-ink-soft">
-        Anteprima con risposte simulate: l&apos;intelligenza artificiale non è ancora collegata.
+        Anteprima di una funzione in arrivo, con risposte simulate. Oggi i clienti prenotano dalla pagina del salone.
       </p>
 
       <ol ref={listRef} className="flex flex-1 flex-col gap-2 overflow-y-auto p-4 text-sm" aria-live="polite">

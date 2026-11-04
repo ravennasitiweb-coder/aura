@@ -5,35 +5,37 @@ import { HeroDemo } from "@/components/landing/HeroDemo";
 const STEPS = [
   { title: "Imposta il salone", text: "Inserisci servizi, durate, prezzi, collaboratori e orari. Bastano un quarto d'ora e il telefono." },
   { title: "Condividi il tuo link", text: "Mettilo nella bio di Instagram, su Google Maps e nel messaggio automatico di WhatsApp." },
-  { title: "Ritrova tutto in agenda", text: "I clienti prenotano da soli o chiedono all'assistente. Gli appuntamenti compaiono già al posto giusto." },
+  { title: "Ritrova tutto in agenda", text: "I clienti prenotano da soli dalla tua pagina. Gli appuntamenti compaiono già al posto giusto, con nome e telefono." },
 ];
 
+// Solo funzioni che il prodotto ha davvero oggi
 const FEATURES = [
-  { title: "Un'agenda per ogni collaboratore", text: "Vedi la giornata di tutti a colpo d'occhio e sposti un appuntamento con un tocco." },
-  { title: "L'assistente capisce come scrivono i clienti", text: "\"Sabato mattina con Marco\" basta: propone solo orari davvero liberi e chiede conferma prima di prenotare." },
+  { title: "Un'agenda per ogni collaboratore", text: "Vedi la giornata di tutti a colpo d'occhio: chi è occupato, chi è libero, quando il salone è chiuso." },
+  { title: "I clienti prenotano da soli, a qualsiasi ora", text: "Dalla tua pagina scelgono servizio, giorno e orario tra quelli davvero liberi, anche di notte e di domenica." },
   { title: "Mai due clienti sulla stessa poltrona", text: "Il sistema blocca un orario appena viene preso, anche se due persone prenotano nello stesso istante." },
-  { title: "Promemoria che riducono i buchi", text: "Il cliente riceve un messaggio il giorno prima e può spostare l'appuntamento senza telefonarti." },
-  { title: "Dati in Europa, nel rispetto del GDPR", text: "Server in UE, consensi registrati, e i dati dei tuoi clienti restano tuoi." },
+  { title: "Orari, pause e servizi come li vuoi tu", text: "Pausa pranzo, giorni di chiusura, chi fa cosa: le prenotazioni rispettano le tue regole." },
+  { title: "Dati in Europa, nel rispetto del GDPR", text: "Server in UE, consenso del cliente registrato a ogni prenotazione, e i dati restano tuoi." },
 ];
 
 const AUDIENCES = [
-  { title: "Parrucchieri", text: "Colori con tempi di posa, pieghe e trattamenti lunghi gestiti senza incastri impossibili." },
-  { title: "Barbieri", text: "Slot da mezz'ora, taglio e barba in sequenza, clienti abituali riconosciuti al volo." },
-  { title: "Estetisti", text: "Trattamenti viso e corpo, cabine e pacchetti, con le preparazioni già calcolate nella durata." },
+  { title: "Parrucchieri", text: "Colori, pieghe e trattamenti lunghi con la loro durata reale, senza incastri impossibili." },
+  { title: "Barbieri", text: "Slot da un quarto d'ora, taglio e barba con il barbiere giusto, la giornata sempre sotto controllo." },
+  { title: "Estetisti", text: "Trattamenti viso e corpo con durate diverse, assegnati solo a chi li sa fare." },
 ];
 
-// Prezzi segnaposto: da definire prima del lancio (Fase 6)
+// Prezzi previsti: da confermare prima della vendita (abbonamenti non ancora attivi)
 const PLANS = [
-  { name: "Solo", price: 19, text: "Per chi lavora da solo.", items: ["1 collaboratore", "Pagina di prenotazione", "Promemoria email"] },
-  { name: "Salone", price: 39, text: "Il piano più scelto.", items: ["Fino a 5 collaboratori", "Assistente AI in chat", "Promemoria email e SMS"], highlight: true },
-  { name: "Studio", price: 69, text: "Per saloni grandi.", items: ["Collaboratori illimitati", "Assistente AI in chat", "Statistiche e più sedi"] },
+  { name: "Solo", price: 19, text: "Per chi lavora da solo.", items: ["1 collaboratore", "Agenda online", "Pagina di prenotazione"] },
+  { name: "Salone", price: 39, text: "Il piano più scelto.", items: ["Fino a 5 collaboratori", "Agenda online", "Pagina di prenotazione", "In arrivo: assistente AI in chat"], highlight: true },
+  { name: "Studio", price: 69, text: "Per saloni grandi.", items: ["Collaboratori illimitati", "Agenda online", "Pagina di prenotazione", "In arrivo: assistente AI in chat"] },
 ];
 
 const FAQ = [
   { q: "Devo installare qualcosa?", a: "No. SmartBooking AI funziona dal browser di computer, tablet e telefono." },
-  { q: "L'assistente può sbagliare un orario?", a: "Non può prenotare un orario occupato: controlla l'agenda vera prima di proporre e chiede sempre conferma al cliente." },
+  { q: "Come prenotano i miei clienti?", a: "Dalla pagina del tuo salone, che condividi su Instagram, Google e WhatsApp: scelgono servizio, giorno e orario tra quelli liberi e lasciano nome e telefono." },
   { q: "Posso continuare a prendere appuntamenti al telefono?", a: "Sì. Li inserisci in agenda in pochi secondi e il sistema li considera come tutti gli altri." },
-  { q: "Che fine fanno i dati dei miei clienti?", a: "Sono conservati su server in Unione Europea e puoi esportarli o cancellarli quando vuoi." },
+  { q: "C'è un assistente AI?", a: "È in arrivo: risponderà ai clienti in chat usando gli stessi orari liberi della tua agenda. Lo attiveremo solo con un fornitore che tratta i dati in Europa." },
+  { q: "Che fine fanno i dati dei miei clienti?", a: "Sono conservati su server nell'Unione Europea (Francoforte), non vengono venduti né usati per pubblicità." },
 ];
 
 export default function Home() {
@@ -45,8 +47,8 @@ export default function Home() {
           <a href="#come-funziona" className="hidden text-ink-soft hover:text-ink md:inline">Come funziona</a>
           <a href="#prezzi" className="hidden text-ink-soft hover:text-ink md:inline">Prezzi</a>
           <Link href="/accedi" className="text-ink-soft hover:text-ink">Accedi</Link>
-          <Link href="/demo" className="rounded-full bg-ink px-4 py-2 font-medium text-white hover:bg-bottle-dark">
-            Prova la demo
+          <Link href="/registrati" className="rounded-full bg-ink px-4 py-2 font-medium text-white hover:bg-bottle-dark">
+            Crea il tuo salone
           </Link>
         </nav>
       </header>
@@ -59,16 +61,16 @@ export default function Home() {
               Il tuo salone prende appuntamenti anche quando hai le mani tra i capelli.
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-soft">
-              SmartBooking AI risponde ai clienti in chat, trova l&apos;orario libero giusto e lo scrive in agenda.
-              Per parrucchieri, barbieri ed estetisti.
+              I clienti prenotano da soli dalla pagina del tuo salone, a qualsiasi ora, solo negli orari davvero liberi.
+              Tu ritrovi tutto in agenda. Per parrucchieri, barbieri ed estetisti.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/demo" className="rounded-full bg-bottle px-6 py-3 font-semibold text-white hover:bg-bottle-dark">
+              <Link href="/registrati" className="rounded-full bg-bottle px-6 py-3 font-semibold text-white hover:bg-bottle-dark">
+                Crea il tuo salone
+              </Link>
+              <Link href="/demo" className="rounded-full border border-ink/20 px-6 py-3 font-semibold hover:border-ink">
                 Prova la demo
               </Link>
-              <a href="#come-funziona" className="rounded-full border border-ink/20 px-6 py-3 font-semibold hover:border-ink">
-                Scopri come funziona
-              </a>
             </div>
           </div>
           <HeroDemo />
@@ -78,7 +80,7 @@ export default function Home() {
         <section className="border-y border-line bg-white">
           <p className="mx-auto max-w-4xl px-4 py-14 text-center font-display text-2xl leading-snug sm:text-3xl">
             Il telefono che squilla durante una piega. I messaggi su WhatsApp alle undici di sera.
-            Il cliente che non si presenta. Da oggi ci pensa SmartBooking AI.
+            Due clienti sullo stesso orario. Da oggi ci pensa SmartBooking AI.
           </p>
         </section>
 
@@ -135,7 +137,7 @@ export default function Home() {
         <section id="prezzi" className="scroll-mt-8 border-t border-line bg-white">
           <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
             <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">Prezzi semplici, senza vincoli</h2>
-            <p className="mt-3 text-ink-soft">14 giorni di prova gratuita. Prezzi mensili, IVA esclusa.</p>
+            <p className="mt-3 text-ink-soft">Prezzi mensili previsti, IVA esclusa. Durante il periodo di lancio puoi usarlo gratis.</p>
             <div className="mt-10 grid gap-6 md:grid-cols-3">
               {PLANS.map((p) => (
                 <div
@@ -156,12 +158,12 @@ export default function Home() {
                     ))}
                   </ul>
                   <Link
-                    href="/demo"
+                    href="/registrati"
                     className={`mt-8 rounded-full px-5 py-3 text-center font-semibold ${
                       p.highlight ? "bg-white text-bottle hover:bg-mint" : "bg-ink text-white hover:bg-bottle-dark"
                     }`}
                   >
-                    Prova la demo
+                    Crea il tuo salone
                   </Link>
                 </div>
               ))}
@@ -189,11 +191,16 @@ export default function Home() {
         <section className="bg-bottle text-white">
           <div className="mx-auto flex w-full max-w-6xl flex-col items-start gap-6 px-4 py-16 sm:px-6 md:flex-row md:items-center md:justify-between">
             <h2 className="max-w-xl font-display text-3xl font-bold tracking-tight">
-              Guarda l&apos;assistente prenotare in un salone di prova.
+              Imposta il tuo salone in un quarto d&apos;ora e condividi il link già oggi.
             </h2>
-            <Link href="/demo" className="rounded-full bg-white px-6 py-3 font-semibold text-bottle hover:bg-mint">
-              Apri la demo
-            </Link>
+            <div className="flex flex-wrap gap-3">
+              <Link href="/registrati" className="rounded-full bg-white px-6 py-3 font-semibold text-bottle hover:bg-mint">
+                Crea il tuo salone
+              </Link>
+              <Link href="/demo" className="rounded-full border border-white/40 px-6 py-3 font-semibold text-white hover:border-white">
+                Prova la demo
+              </Link>
+            </div>
           </div>
         </section>
       </main>
@@ -201,8 +208,7 @@ export default function Home() {
       <footer className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-10 text-sm text-ink-soft sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <Logo className="text-ink" />
         <div className="flex gap-6">
-          <a href="#" className="hover:text-ink">Privacy</a>
-          <a href="#" className="hover:text-ink">Termini di servizio</a>
+          <Link href="/privacy" className="hover:text-ink">Privacy</Link>
           <span>© 2026 SmartBooking AI</span>
         </div>
       </footer>

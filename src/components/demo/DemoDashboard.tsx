@@ -11,7 +11,7 @@ const NAV = [
   { label: "Clienti" },
   { label: "Servizi" },
   { label: "Collaboratori" },
-  { label: "Assistente AI" },
+  { label: "Assistente AI (in arrivo)" },
   { label: "Impostazioni" },
 ];
 
