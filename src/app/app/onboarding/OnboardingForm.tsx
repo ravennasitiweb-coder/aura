@@ -1,7 +1,8 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { BUSINESS_TYPES, DEFAULT_BUSINESS_TYPE, businessType, placeWith } from "@/lib/business-types";
+import { BusinessTypeSelect } from "@/components/app/BusinessTypeSelect";
+import { DEFAULT_BUSINESS_TYPE, businessType, placeWith } from "@/lib/business-types";
 import { formatDuration } from "@/lib/format";
 import { slugDraft, slugify } from "@/lib/slug";
 import { createSalon } from "./actions";
@@ -20,27 +21,10 @@ export function OnboardingForm() {
 
   return (
     <form action={formAction} className="space-y-6">
-      <fieldset>
-        <legend className="text-sm font-semibold">Che attività hai?</legend>
-        <div className="mt-2 grid grid-cols-2 gap-2">
-          {BUSINESS_TYPES.map((t) => (
-            <label
-              key={t.id}
-              className="flex cursor-pointer items-center gap-2 rounded-xl border border-line bg-white px-3 py-2.5 text-sm has-[:checked]:border-bottle has-[:checked]:bg-mint has-[:checked]:font-semibold"
-            >
-              <input
-                type="radio"
-                name="business_type"
-                value={t.id}
-                checked={type === t.id}
-                onChange={() => setType(t.id)}
-                className="h-4 w-4 accent-bottle"
-              />
-              {t.label}
-            </label>
-          ))}
-        </div>
-      </fieldset>
+      <div>
+        <label htmlFor="business_type" className="block text-sm font-semibold">Che attività hai?</label>
+        <BusinessTypeSelect id="business_type" value={type} onChange={setType} className={INPUT} />
+      </div>
 
       <div>
         <label htmlFor="name" className="block text-sm font-semibold">

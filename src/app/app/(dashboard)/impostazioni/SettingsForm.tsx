@@ -4,7 +4,8 @@ import { useActionState } from "react";
 import { saveSalonSettings } from "@/app/app/actions";
 import { FormMessage, INPUT, LABEL, SubmitButton } from "@/components/app/ui";
 import type { Salon } from "@/lib/auth";
-import { BUSINESS_TYPES, businessType } from "@/lib/business-types";
+import { BusinessTypeSelect } from "@/components/app/BusinessTypeSelect";
+import { businessType } from "@/lib/business-types";
 
 export function SettingsForm({ salon, canEdit }: { salon: Salon; canEdit: boolean }) {
   const [state, action] = useActionState(saveSalonSettings, {});
@@ -13,17 +14,12 @@ export function SettingsForm({ salon, canEdit }: { salon: Salon; canEdit: boolea
     <form action={action} className="max-w-xl space-y-5 rounded-2xl border border-line bg-white p-6">
       <div>
         <label htmlFor="business_type" className={LABEL}>Tipo di attività</label>
-        <select
+        <BusinessTypeSelect
           id="business_type"
-          name="business_type"
           defaultValue={businessType(salon.business_type).id}
           disabled={!canEdit}
           className={`${INPUT} mt-1.5`}
-        >
-          {BUSINESS_TYPES.map((t) => (
-            <option key={t.id} value={t.id}>{t.label}</option>
-          ))}
-        </select>
+        />
       </div>
       <div>
         <label htmlFor="name" className={LABEL}>Nome dell&apos;attività</label>

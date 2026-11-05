@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { HeroDemo } from "@/components/landing/HeroDemo";
-import { BUSINESS_TYPES } from "@/lib/business-types";
+import { BUSINESS_TYPES, typesByCategory } from "@/lib/business-types";
 import { PLANS } from "@/lib/plans";
 
 const STEPS = [
@@ -113,12 +113,29 @@ export default function Home() {
         <section className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
           <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">Su misura per il tuo mestiere</h2>
           <div className="mt-10 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
-            {BUSINESS_TYPES.map((t) => (
+            {BUSINESS_TYPES.filter((t) => t.featured).map((t) => (
               <div key={t.id}>
                 <h3 className="font-display text-xl font-bold text-bottle">{t.label}</h3>
-                <p className="mt-2 leading-relaxed text-ink-soft">{t.pitch}</p>
+                <p className="mt-2 leading-relaxed text-ink-soft">{t.featured!.pitch}</p>
               </div>
             ))}
+          </div>
+
+          {/* Tutte le altre attività, per categoria */}
+          <div className="mt-14 border-t border-line pt-10">
+            <h3 className="font-display text-xl font-bold">E molte altre attività su appuntamento</h3>
+            <dl className="mt-6 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
+              {typesByCategory().map(({ category, types }) => {
+                const others = types.filter((t) => !t.featured);
+                if (others.length === 0) return null;
+                return (
+                  <div key={category}>
+                    <dt className="text-sm font-semibold text-bottle">{category}</dt>
+                    <dd className="mt-1 leading-relaxed text-ink-soft">{others.map((t) => t.label).join(", ")}</dd>
+                  </div>
+                );
+              })}
+            </dl>
           </div>
         </section>
 
