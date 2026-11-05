@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { CopyLink } from "@/components/app/CopyLink";
+import { GapsCard } from "@/components/app/GapsCard";
+import { getTomorrowGaps } from "@/lib/gaps";
 import { getCurrentSalon } from "@/lib/auth";
 
 export const metadata: Metadata = { title: "Panoramica — SmartBooking" };
@@ -16,7 +18,7 @@ export default function OverviewPage() {
 }
 
 async function Overview() {
-  const { supabase, salon } = await getCurrentSalon();
+  const { supabase, salon, role } = await getCurrentSalon();
 
   const [services, staff, hours, links] = await Promise.all([
     supabase.from("services").select("id", { count: "exact", head: true }).eq("salon_id", salon.id),
@@ -39,6 +41,12 @@ async function Overview() {
         <p className="text-sm text-ink-soft">Benvenuto in</p>
         <h1 className="font-display text-3xl font-bold tracking-tight">{salon.name}</h1>
       </div>
+
+      {completed === steps.length && role === "owner" && (
+        <Suspense fallback={null}>
+          <Gaps />
+        </Suspense>
+      )}
 
       <section aria-labelledby="setup-title" className="rounded-2xl border border-line bg-white p-6">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -99,4 +107,9 @@ async function Overview() {
       </section>
     </div>
   );
+}
+
+async function Gaps() {
+  const { times, reachable } = await getTomorrowGaps();
+  return <GapsCard times={times} reachable={reachable.length} />;
 }

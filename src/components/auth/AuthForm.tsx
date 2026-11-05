@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useActionState } from "react";
 import type { FormState } from "@/app/(auth)/actions";
 
@@ -14,6 +15,8 @@ type Props = {
 
 export function AuthForm({ action, submitLabel, pendingLabel, passwordHint, footer }: Props) {
   const [state, formAction, pending] = useActionState(action, {});
+  // Dove tornare dopo l'accesso (es. un invito); il server lo ricontrolla
+  const next = useSearchParams().get("next") ?? "";
 
   if (state.message) {
     return (
@@ -27,6 +30,7 @@ export function AuthForm({ action, submitLabel, pendingLabel, passwordHint, foot
 
   return (
     <form action={formAction} className="space-y-5" noValidate>
+      <input type="hidden" name="next" value={next} />
       <div>
         <label htmlFor="email" className="block text-sm font-semibold">Email</label>
         <input
@@ -70,7 +74,7 @@ export function AuthForm({ action, submitLabel, pendingLabel, passwordHint, foot
 
       <p className="text-center text-sm text-ink-soft">
         {footer.text}{" "}
-        <Link href={footer.href} className="font-semibold text-bottle underline-offset-2 hover:underline">
+        <Link href={next ? `${footer.href}?next=${encodeURIComponent(next)}` : footer.href} className="font-semibold text-bottle underline-offset-2 hover:underline">
           {footer.linkLabel}
         </Link>
       </p>

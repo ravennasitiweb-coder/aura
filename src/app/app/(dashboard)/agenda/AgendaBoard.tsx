@@ -6,7 +6,7 @@ import { useActionState, useCallback, useState } from "react";
 import { setAppointmentStatus } from "@/app/app/agenda-actions";
 import { FormMessage } from "@/components/app/ui";
 import { addDays, formatLongDate, minutesToTime, type TimeRange } from "@/lib/agenda";
-import type { AgendaAppointment } from "@/lib/agenda-data";
+import type { AgendaAppointment, AgendaTimeOff, WaitlistEntry } from "@/lib/agenda-data";
 import { AppointmentForm } from "./AppointmentForm";
 import { ViewSwitch } from "./ViewSwitch";
 
@@ -21,6 +21,10 @@ export type AgendaProps = {
   services: Service[];
   links: { staff_id: string; service_id: string }[];
   openRanges: TimeRange[];
+  /** Fasce personali di chi ha orari propri (vuoto = quel giorno non lavora) */
+  staffRanges: Record<string, TimeRange[]>;
+  timeOff: AgendaTimeOff[];
+  waitlist: WaitlistEntry[];
 };
 
 const PX_PER_MIN = 1.6;
@@ -39,7 +43,7 @@ const SOURCE_LABEL: Record<AgendaAppointment["source"], string> = {
 };
 
 export function AgendaBoard(props: AgendaProps) {
-  const { date, today, appointments, staff, services, openRanges } = props;
+  const { date, today, appointments, staff, services, openRanges, staffRanges, timeOff, waitlist } = props;
   const router = useRouter();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
@@ -54,22 +58,28 @@ export function AgendaBoard(props: AgendaProps) {
   const columns = staff.filter((s) => s.active || appointments.some((a) => a.staff_id === s.id));
 
   // Intervallo visibile: dall'apertura alla chiusura, allargato agli appuntamenti fuori orario
-  const starts = [...openRanges.map((r) => r.start), ...appointments.map((a) => a.start_min)];
-  const ends = [...openRanges.map((r) => r.end), ...appointments.map((a) => a.end_min)];
+  const allRanges = [...openRanges, ...Object.values(staffRanges).flat()];
+  const starts = [...allRanges.map((r) => r.start), ...appointments.map((a) => a.start_min)];
+  const ends = [...allRanges.map((r) => r.end), ...appointments.map((a) => a.end_min)];
   const dayStart = starts.length ? Math.floor(Math.min(...starts) / 60) * 60 : 9 * 60;
   const dayEnd = ends.length ? Math.ceil(Math.max(...ends) / 60) * 60 : 19 * 60;
   const hours: number[] = [];
   for (let m = dayStart; m <= dayEnd; m += 60) hours.push(m);
   const height = (dayEnd - dayStart) * PX_PER_MIN;
 
-  // Fasce di chiusura (prima, tra e dopo le fasce di apertura)
-  const closed: TimeRange[] = [];
-  let cursor = dayStart;
-  for (const r of [...openRanges].sort((a, b) => a.start - b.start)) {
-    if (r.start > cursor) closed.push({ start: cursor, end: r.start });
-    cursor = Math.max(cursor, r.end);
-  }
-  if (cursor < dayEnd) closed.push({ start: cursor, end: dayEnd });
+  // Fasce in cui ogni collaboratore non lavora (prima, tra e dopo le sue fasce)
+  const closedFor = (staffId: string) => {
+    const ranges = staffRanges[staffId] ?? openRanges;
+    const closed: TimeRange[] = [];
+    let cursor = dayStart;
+    for (const r of [...ranges].sort((a, b) => a.start - b.start)) {
+      if (r.start > cursor) closed.push({ start: cursor, end: r.start });
+      cursor = Math.max(cursor, r.end);
+    }
+    if (cursor < dayEnd) closed.push({ start: cursor, end: dayEnd });
+    return closed;
+  };
+  const serviceName = (id: string) => services.find((s) => s.id === id)?.name ?? "";
 
   const active = appointments.filter((a) => a.status !== "cancelled");
 
@@ -139,7 +149,7 @@ export function AgendaBoard(props: AgendaProps) {
 
                   {columns.map((s) => (
                     <div key={s.id} className="relative border-l border-line" style={{ height }}>
-                      {closed.map((c) => (
+                      {closedFor(s.id).map((c) => (
                         <div
                           key={c.start}
                           className="absolute inset-x-0 bg-[repeating-linear-gradient(135deg,var(--color-paper)_0_6px,transparent_6px_12px)]"
@@ -150,6 +160,18 @@ export function AgendaBoard(props: AgendaProps) {
                       {hours.map((m) => (
                         <div key={m} className="absolute inset-x-0 border-t border-line/70" style={{ top: (m - dayStart) * PX_PER_MIN }} />
                       ))}
+                      {timeOff
+                        .filter((o) => o.staff_id === s.id)
+                        .map((o) => (
+                          <div
+                            key={o.id}
+                            className="absolute inset-x-1.5 overflow-hidden rounded-lg border border-chrome/40 bg-line/70 px-2 py-1 text-xs text-ink-soft"
+                            style={{ top: (Math.max(o.start_min, dayStart) - dayStart) * PX_PER_MIN + 1, height: Math.max((Math.min(o.end_min, dayEnd) - Math.max(o.start_min, dayStart)) * PX_PER_MIN - 2, 22) }}
+                          >
+                            <span className="font-semibold">Assente</span>
+                            {o.reason && <span className="block truncate">{o.reason}</span>}
+                          </div>
+                        ))}
                       {appointments
                         .filter((a) => a.staff_id === s.id)
                         .map((a) => (
@@ -171,6 +193,7 @@ export function AgendaBoard(props: AgendaProps) {
                           >
                             <span className="block truncate font-semibold">
                               {minutesToTime(a.start_min)} {a.customer_name}
+                              {a.customer_confirmed && a.status === "confirmed" && <span className="ml-1 text-bottle" title="Confermato dal cliente">✓</span>}
                             </span>
                             <span className="block truncate text-ink-soft">{a.service_name}</span>
                           </button>
@@ -185,6 +208,22 @@ export function AgendaBoard(props: AgendaProps) {
 
         {/* Pannello laterale: dettaglio o nuovo appuntamento */}
         <div className="space-y-4">
+          {waitlist.length > 0 && (
+            <section aria-label="Lista d'attesa" className="rounded-2xl border border-line bg-white p-4">
+              <h2 className="font-semibold">Lista d&apos;attesa ({waitlist.length})</h2>
+              <p className="mt-1 text-xs text-ink-soft">Se si libera un orario, le persone in lista ricevono un&apos;email automatica.</p>
+              <ul className="mt-3 space-y-2 text-sm">
+                {waitlist.map((w) => (
+                  <li key={w.id} className="flex justify-between gap-2">
+                    <span>
+                      <span className="font-semibold">{w.customer_name}</span>, {serviceName(w.service_id)}
+                    </span>
+                    <a href={`tel:${w.customer_phone}`} className="shrink-0 text-bottle underline">{w.customer_phone}</a>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
           {selected && editing ? (
             <AppointmentForm key={`edit-${selected.id}`} {...props} editing={selected} onDone={stopEditing} />
           ) : (
@@ -246,7 +285,10 @@ function AppointmentDetail({
       <dl className="mt-4 space-y-1 text-sm">
         <div className="flex gap-2">
           <dt className="text-ink-soft">Stato:</dt>
-          <dd className="font-semibold">{STATUS_LABEL[a.status]}</dd>
+          <dd className="font-semibold">
+            {STATUS_LABEL[a.status]}
+            {a.status === "confirmed" && (a.customer_confirmed ? ", confermato dal cliente ✓" : ", in attesa di conferma")}
+          </dd>
         </div>
         {a.customer_phone && (
           <div className="flex gap-2">

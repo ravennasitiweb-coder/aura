@@ -4,7 +4,15 @@ import { useActionState } from "react";
 import { createStaff, deleteStaff, updateStaff } from "@/app/app/actions";
 import { FormMessage, INPUT, LABEL, SubmitButton } from "@/components/app/ui";
 
-export type StaffItem = { id: string; name: string; role_title: string | null; active: boolean; serviceIds: string[] };
+export type StaffItem = {
+  id: string;
+  name: string;
+  role_title: string | null;
+  active: boolean;
+  serviceIds: string[];
+  user_id: string | null;
+  calendar_token: string;
+};
 
 export function NewStaffForm() {
   const [state, action] = useActionState(createStaff, {});

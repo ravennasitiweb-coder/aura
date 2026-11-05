@@ -219,6 +219,26 @@ export function AppointmentForm({ date: agendaDate, today, appointments, staff, 
         />
       </div>
       <div>
+        <label htmlFor={`${prefix}-email`} className={LABEL}>
+          Email <span className="font-normal text-ink-soft">(facoltativa, per il promemoria)</span>
+        </label>
+        <input
+          id={`${prefix}-email`}
+          name="customer_email"
+          type="email"
+          maxLength={254}
+          defaultValue={editing?.customer_email ?? ""}
+          autoComplete="off"
+          className={`${INPUT} mt-1.5`}
+        />
+      </div>
+      {!editing && (
+        <label className="flex items-start gap-2 text-sm text-ink-soft">
+          <input type="checkbox" name="marketing" className="mt-0.5 h-4 w-4 accent-bottle" />
+          Il cliente accetta di ricevere offerte e richiami
+        </label>
+      )}
+      <div>
         <label htmlFor={`${prefix}-notes`} className={LABEL}>
           Note <span className="font-normal text-ink-soft">(facoltative)</span>
         </label>

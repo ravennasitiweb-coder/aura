@@ -8,7 +8,7 @@ import { getCurrentSalon } from "@/lib/auth";
 export default function AppLayout({ children }: LayoutProps<"/app">) {
   return (
     <div className="flex min-h-screen flex-col lg:flex-row">
-      <aside className="border-b border-line bg-white lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-60 lg:shrink-0 lg:flex-col lg:border-b-0 lg:border-r">
+      <aside className="print:hidden border-b border-line bg-white lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-60 lg:shrink-0 lg:flex-col lg:border-b-0 lg:border-r">
         <div className="flex items-center justify-between px-4 py-4 lg:px-5 lg:py-5">
           <Logo className="text-base" />
           <form action={signOut} className="lg:hidden">

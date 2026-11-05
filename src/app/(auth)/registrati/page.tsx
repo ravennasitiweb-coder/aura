@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { signUp } from "../actions";
 
@@ -9,6 +10,8 @@ export default function SignUpPage() {
     <>
       <h1 className="font-display text-3xl font-bold tracking-tight">Crea il tuo account</h1>
       <p className="mt-2 mb-8 text-ink-soft">Dopo la registrazione imposterai il tuo salone in pochi minuti.</p>
+      {/* Suspense: il modulo legge l'indirizzo della pagina (?next=) */}
+      <Suspense fallback={null}>
       <AuthForm
         action={signUp}
         submitLabel="Crea account"
@@ -16,6 +19,7 @@ export default function SignUpPage() {
         passwordHint="Almeno 8 caratteri."
         footer={{ text: "Hai già un account?", linkLabel: "Accedi", href: "/accedi" }}
       />
+      </Suspense>
     </>
   );
 }

@@ -42,6 +42,12 @@ export async function getCustomerHistory(key: string) {
   return { visits: (data ?? []) as CustomerVisit[], canForget: role === "owner" };
 }
 
+export async function getCustomerNote(key: string) {
+  const { supabase, salon } = await getCurrentSalon();
+  const { data } = await supabase.from("customer_notes").select("notes, updated_at").eq("salon_id", salon.id).eq("customer_key", key).maybeSingle();
+  return data;
+}
+
 const dateTime = new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Rome" });
 const dateOnly = new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "short", year: "numeric", timeZone: "Europe/Rome" });
 

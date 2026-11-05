@@ -37,6 +37,9 @@ async function Agenda({ searchParams }: { searchParams: PageProps<"/app/agenda">
       services={day.services}
       links={day.links}
       openRanges={day.openRanges}
+      staffRanges={day.staffRanges}
+      timeOff={day.timeOff}
+      waitlist={day.waitlist}
     />
   );
 }

@@ -9,30 +9,64 @@ const SLOT_STEP_MIN = 15;
 
 /**
  * Orari in cui un servizio di `durationMin` può iniziare, per ogni
- * collaboratore indicato: dentro una fascia di apertura (senza sforare
- * la chiusura o la pausa) e senza sovrapporsi ad altri appuntamenti.
+ * collaboratore indicato: dentro una sua fascia di lavoro (senza sforare
+ * la chiusura o la pausa) e senza sovrapporsi ad appuntamenti o assenze.
+ *
+ * `staffRanges`: fasce personali dei collaboratori che hanno orari propri.
+ * Chi non compare lì usa `openRanges`, cioè gli orari dell'attività.
  */
 export function computeFreeSlots(opts: {
   openRanges: TimeRange[];
+  staffRanges?: Record<string, TimeRange[]>;
   staffIds: string[];
   busy: BusyBlock[];
   durationMin: number;
   notBeforeMin?: number;
 }): FreeSlot[] {
-  const { openRanges, staffIds, busy, durationMin, notBeforeMin = 0 } = opts;
+  const { openRanges, staffRanges = {}, staffIds, busy, durationMin, notBeforeMin = 0 } = opts;
+  const firstAllowed = Math.ceil(notBeforeMin / SLOT_STEP_MIN) * SLOT_STEP_MIN;
   const slots: FreeSlot[] = [];
 
-  for (const range of openRanges) {
-    const first = Math.max(range.start, Math.ceil(notBeforeMin / SLOT_STEP_MIN) * SLOT_STEP_MIN);
-    for (let start = first; start + durationMin <= range.end; start += SLOT_STEP_MIN) {
-      const end = start + durationMin;
-      for (const staffId of staffIds) {
+  for (const staffId of staffIds) {
+    const ranges = staffRanges[staffId] ?? openRanges;
+    for (const range of ranges) {
+      for (let start = Math.max(range.start, firstAllowed); start + durationMin <= range.end; start += SLOT_STEP_MIN) {
+        const end = start + durationMin;
         const overlaps = busy.some((b) => b.staffId === staffId && b.start < end && start < b.end);
         if (!overlaps) slots.push({ staffId, start });
       }
     }
   }
-  return slots.sort((a, b) => a.start - b.start);
+  // Ordine per orario; a parità di orario resta l'ordine dei collaboratori
+  return slots.sort((a, b) => a.start - b.start || staffIds.indexOf(a.staffId) - staffIds.indexOf(b.staffId));
+}
+
+/**
+ * Istante (UTC) della mezzanotte di `date` nel fuso `timeZone`,
+ * ora legale compresa. Es. 2026-12-01 a Roma = 2026-11-30T23:00:00Z.
+ */
+export function zonedMidnightUtc(date: string, timeZone: string): Date {
+  const [y, m, d] = date.split("-").map(Number);
+  let guess = Date.UTC(y, m - 1, d);
+  // Due passaggi bastano anche nei giorni del cambio d'ora
+  for (let i = 0; i < 2; i++) {
+    const local = nowInTimezone(timeZone, new Date(guess));
+    const shift = local.date === date ? local.minutes : local.date < date ? local.minutes - 1440 : local.minutes + 1440;
+    guess -= shift * 60_000;
+  }
+  return new Date(guess);
+}
+
+/**
+ * Minuti dalla mezzanotte di `date` (nel fuso `timeZone`) di un istante,
+ * tagliati al giorno: prima del giorno = 0, dopo = 1440.
+ * Serve per disegnare e calcolare assenze che durano più giorni.
+ */
+export function minutesInDay(iso: string, date: string, timeZone: string) {
+  const local = nowInTimezone(timeZone, new Date(iso));
+  if (local.date < date) return 0;
+  if (local.date > date) return 1440;
+  return local.minutes;
 }
 
 // Date ------------------------------------------------------------------

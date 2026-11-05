@@ -6,6 +6,7 @@ import { addDays, isoWeekday, minutesToTime, type FreeSlot } from "@/lib/agenda"
 import { formatDuration, formatPrice } from "@/lib/format";
 import type { PublicSalonInfo } from "@/lib/public-booking";
 import { book, loadSlots, type BookingResult } from "./actions";
+import { WaitlistForm } from "./WaitlistForm";
 
 type Booking = Extract<BookingResult, { ok: true }>["booking"];
 
@@ -184,7 +185,10 @@ export function BookingFlow({ slug, info, today }: { slug: string; info: PublicS
           ) : !isOpenDay(date) ? (
             <p className="text-ink-soft">In questo giorno è chiuso. Scegline un altro.</p>
           ) : visibleSlots.length === 0 ? (
-            <p className="text-ink-soft">Nessun orario libero in questo giorno. Prova un altro giorno.</p>
+            <div className="space-y-3">
+              <p className="text-ink-soft">Nessun orario libero in questo giorno. Prova un altro giorno, oppure:</p>
+              <WaitlistForm slug={slug} serviceId={service.id} staffId={staffId} date={date} />
+            </div>
           ) : (
             <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
               {visibleSlots.map((s) => {
@@ -242,6 +246,13 @@ export function BookingFlow({ slug, info, today }: { slug: string; info: PublicS
                 Ho letto l&apos;
                 <Link href="/privacy" target="_blank" className="text-bottle underline">informativa sulla privacy</Link> e acconsento al
                 trattamento dei miei dati per gestire la prenotazione.
+              </span>
+            </label>
+            <label className="flex items-start gap-3 text-sm text-ink-soft">
+              <input type="checkbox" name="marketing" className="mt-0.5 h-4 w-4 accent-bottle" />
+              <span>
+                <span className="font-normal">Facoltativo:</span> voglio ricevere da {info.salon.name} offerte, posti liberi e richiami
+                per il prossimo appuntamento. Puoi disiscriverti quando vuoi.
               </span>
             </label>
 
@@ -327,7 +338,11 @@ function Confirmation({ booking, onAnother }: { booking: Booking; onAnother: () 
           Prenota un altro appuntamento
         </button>
       </div>
-      <p className="mt-6 text-sm text-ink-soft">Se non puoi venire, avvisa il prima possibile.</p>
+      <p className="mt-6 text-sm text-ink-soft">
+        Se non puoi venire,{" "}
+        <Link href={`/gestisci/${booking.manage_token}`} className="text-bottle underline">sposta o annulla l&apos;appuntamento</Link>.
+        Il link ti arriva anche per email, se l&apos;hai indicata.
+      </p>
     </section>
   );
 }

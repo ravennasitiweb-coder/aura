@@ -172,14 +172,33 @@ export async function saveSalonSettings(_prev: ActionState, formData: FormData):
   const city = str(formData, "city");
   const slug = slugify(str(formData, "slug"));
   const type = str(formData, "business_type");
+  const cancelHours = Number(str(formData, "cancel_hours"));
+  const recallRaw = str(formData, "recall_days");
+  const recallDays = recallRaw ? Number(recallRaw) : null;
+  const reviewUrl = str(formData, "google_review_url");
 
   if (!isBusinessType(type)) return { error: "Scegli il tipo di attività." };
   if (name.length < 2 || name.length > 80) return { error: "Il nome deve avere tra 2 e 80 caratteri." };
   if (slug.length < 3) return { error: "L'indirizzo deve avere almeno 3 caratteri (lettere, numeri e trattini)." };
+  if (!Number.isInteger(cancelHours) || cancelHours < 0 || cancelHours > 168) return { error: "Scegli entro quando si può annullare." };
+  if (recallDays !== null && (!Number.isInteger(recallDays) || recallDays < 14 || recallDays > 365)) return { error: "Scegli ogni quanto richiamare i clienti." };
+  if (reviewUrl && (!reviewUrl.startsWith("https://") || reviewUrl.length > 300)) {
+    return { error: "Il link delle recensioni deve iniziare con https:// (copialo da Google Business Profile)." };
+  }
 
   const { error } = await supabase
     .from("salons")
-    .update({ name, city: city || null, slug, business_type: type })
+    .update({
+      name,
+      city: city || null,
+      slug,
+      business_type: type,
+      cancel_hours: cancelHours,
+      reminders_enabled: formData.get("reminders_enabled") !== null,
+      daily_summary: formData.get("daily_summary") !== null,
+      recall_days: recallDays,
+      google_review_url: reviewUrl || null,
+    })
     .eq("id", salon.id);
   if (error) {
     if (error.code === "23505") return { error: `L'indirizzo /p/${slug} è già usato da un'altra attività.` };

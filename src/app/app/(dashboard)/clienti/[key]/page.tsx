@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { formatDateTime, getCustomerHistory, localDay } from "@/lib/customers";
+import { formatDateTime, getCustomerHistory, getCustomerNote, localDay } from "@/lib/customers";
+import { CustomerNotes } from "./CustomerNotes";
 import { ForgetCustomer } from "./ForgetCustomer";
 
 export const metadata: Metadata = { title: "Cliente — SmartBooking" };
@@ -37,7 +38,7 @@ async function Customer({ params }: { params: PageProps<"/app/clienti/[key]">["p
   } catch {
     // già decodificato
   }
-  const { visits, canForget } = await getCustomerHistory(key);
+  const [{ visits, canForget }, note] = await Promise.all([getCustomerHistory(key), getCustomerNote(key)]);
   if (visits.length === 0) notFound();
 
   const latest = visits[0];
@@ -71,6 +72,8 @@ async function Customer({ params }: { params: PageProps<"/app/clienti/[key]">["p
           <dd className={`font-display text-2xl font-bold ${noShows > 0 ? "text-cherry" : ""}`}>{noShows}</dd>
         </div>
       </dl>
+
+      <CustomerNotes customerKey={key} notes={note?.notes ?? ""} updatedLabel={note ? formatDateTime(note.updated_at) : null} />
 
       <section aria-labelledby="history-title">
         <h2 id="history-title" className="mb-3 font-semibold">Storico</h2>

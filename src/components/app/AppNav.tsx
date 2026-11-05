@@ -8,10 +8,12 @@ const LINKS = [
   { href: "/app", label: "Panoramica" },
   { href: "/app/agenda", label: "Agenda" },
   { href: "/app/clienti", label: "Clienti" },
+  { href: "/app/statistiche", label: "Statistiche" },
   { href: "/app/servizi", label: "Servizi" },
   { href: "/app/collaboratori", label: "Collaboratori" },
   { href: "/app/orari", label: "Orari di apertura" },
   { href: "/app/impostazioni", label: "Impostazioni" },
+  { href: "/app/qr", label: "QR code" },
   { href: "/app/abbonamento", label: "Abbonamento" },
 ];
 

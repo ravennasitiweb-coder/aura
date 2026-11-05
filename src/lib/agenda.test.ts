@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { addDays, computeFreeSlots, isValidDate, isoWeekday, nowInTimezone, startOfWeek } from "./agenda.ts";
+import { addDays, computeFreeSlots, isValidDate, isoWeekday, minutesInDay, nowInTimezone, startOfWeek, zonedMidnightUtc } from "./agenda.ts";
 
 const t = (h: number, m = 0) => h * 60 + m;
 
@@ -29,6 +29,57 @@ test("salta gli orari occupati solo per il collaboratore impegnato", () => {
   const marco = slots.filter((s) => s.staffId === "marco").map((s) => s.start);
   assert.deepEqual(giulia, [t(9), t(10), t(10, 15), t(10, 30)]);
   assert.equal(marco.length, 7);
+});
+
+test("rispetta gli orari personali: Marco lavora solo il pomeriggio", () => {
+  const slots = computeFreeSlots({
+    openRanges: [{ start: t(9), end: t(13) }, { start: t(15), end: t(19) }],
+    staffRanges: { marco: [{ start: t(15), end: t(17) }] },
+    staffIds: ["giulia", "marco"],
+    busy: [],
+    durationMin: 60,
+  });
+  const marco = slots.filter((s) => s.staffId === "marco").map((s) => s.start);
+  const giulia = slots.filter((s) => s.staffId === "giulia").map((s) => s.start);
+  assert.deepEqual(marco, [t(15), t(15, 15), t(15, 30), t(15, 45), t(16)]);
+  assert.equal(giulia[0], t(9), "Giulia segue gli orari dell'attività");
+});
+
+test("chi ha orari personali ma quel giorno non lavora non è prenotabile", () => {
+  const slots = computeFreeSlots({
+    openRanges: [{ start: t(9), end: t(13) }],
+    staffRanges: { marco: [] },
+    staffIds: ["marco"],
+    busy: [],
+    durationMin: 30,
+  });
+  assert.equal(slots.length, 0);
+});
+
+test("le assenze bloccano come un appuntamento", () => {
+  const slots = computeFreeSlots({
+    openRanges: [{ start: t(9), end: t(12) }],
+    staffIds: ["giulia"],
+    busy: [{ staffId: "giulia", start: 0, end: t(11) }],
+    durationMin: 30,
+  });
+  assert.deepEqual(slots.map((s) => s.start), [t(11), t(11, 15), t(11, 30)]);
+});
+
+test("minuti nel giorno, anche per assenze di più giorni", () => {
+  // 1 dicembre 2026: Roma è UTC+1
+  assert.equal(minutesInDay("2026-12-01T09:30:00Z", "2026-12-01", "Europe/Rome"), t(10, 30));
+  assert.equal(minutesInDay("2026-11-30T12:00:00Z", "2026-12-01", "Europe/Rome"), 0, "iniziata il giorno prima");
+  assert.equal(minutesInDay("2026-12-03T12:00:00Z", "2026-12-01", "Europe/Rome"), 1440, "finisce dopo");
+});
+
+test("mezzanotte locale in UTC, con e senza ora legale", () => {
+  assert.equal(zonedMidnightUtc("2026-12-01", "Europe/Rome").toISOString(), "2026-11-30T23:00:00.000Z");
+  assert.equal(zonedMidnightUtc("2026-07-01", "Europe/Rome").toISOString(), "2026-06-30T22:00:00.000Z");
+  // Giorni del cambio d'ora: 29 marzo e 25 ottobre 2026
+  assert.equal(zonedMidnightUtc("2026-03-29", "Europe/Rome").toISOString(), "2026-03-28T23:00:00.000Z");
+  assert.equal(zonedMidnightUtc("2026-10-25", "Europe/Rome").toISOString(), "2026-10-24T22:00:00.000Z");
+  assert.equal(zonedMidnightUtc("2026-03-30", "Europe/Rome").toISOString(), "2026-03-29T22:00:00.000Z");
 });
 
 test("oggi non propone orari già passati", () => {

@@ -27,7 +27,25 @@ export const getPublicSalon = cache(async (slug: string): Promise<PublicSalonInf
   return (data as PublicSalonInfo | null) ?? null;
 });
 
-export async function getPublicFreeSlots(slug: string, serviceId: string, date: string, staffId: string | null): Promise<FreeSlot[]> {
+type PublicDay = {
+  open_ranges: TimeRange[];
+  staff_with_hours: string[];
+  staff_ranges: { staff_id: string; start: number; end: number }[];
+  busy: { staff_id: string; start: number; end: number }[];
+};
+
+/**
+ * Orari liberi per la pagina pubblica.
+ * `ignore`: quando un cliente sposta il suo appuntamento, il suo stesso
+ * orario non deve contare come occupato.
+ */
+export async function getPublicFreeSlots(
+  slug: string,
+  serviceId: string,
+  date: string,
+  staffId: string | null,
+  ignore?: BusyBlock,
+): Promise<FreeSlot[]> {
   const info = await getPublicSalon(slug);
   if (!info || !isValidDate(date)) return [];
 
@@ -44,12 +62,24 @@ export async function getPublicFreeSlots(slug: string, serviceId: string, date: 
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("public_day", { p_slug: slug, p_date: date });
   if (error || !data) return [];
-  const day = data as { open_ranges: TimeRange[]; busy: { staff_id: string; start: number; end: number }[] };
+  const day = data as PublicDay;
+
+  // Chi ha orari personali usa solo quelli (nessuna fascia = quel giorno non lavora)
+  const staffRanges: Record<string, TimeRange[]> = {};
+  for (const id of day.staff_with_hours ?? []) staffRanges[id] = [];
+  for (const r of day.staff_ranges ?? []) staffRanges[r.staff_id]?.push({ start: r.start, end: r.end });
+
+  const busy = day.busy.map((b): BusyBlock => ({ staffId: b.staff_id, start: b.start, end: b.end }));
+  if (ignore) {
+    const i = busy.findIndex((b) => b.staffId === ignore.staffId && b.start === ignore.start && b.end === ignore.end);
+    if (i >= 0) busy.splice(i, 1);
+  }
 
   return computeFreeSlots({
     openRanges: day.open_ranges,
+    staffRanges,
     staffIds,
-    busy: day.busy.map((b): BusyBlock => ({ staffId: b.staff_id, start: b.start, end: b.end })),
+    busy,
     durationMin: service.duration_min,
     notBeforeMin: date === now.date ? now.minutes + MIN_NOTICE_MIN : 0,
   });

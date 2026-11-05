@@ -3,7 +3,10 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { PageHeader } from "@/components/app/ui";
 import { getCurrentSalon } from "@/lib/auth";
+import { StaffExtras, type StaffExtrasData } from "./StaffExtras";
 import { NewStaffForm, StaffRow, type StaffItem } from "./StaffForms";
+
+const offFormat = new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Rome" });
 
 export const metadata: Metadata = { title: "Collaboratori — SmartBooking" };
 
@@ -23,19 +26,36 @@ export default function StaffPage() {
 
 async function StaffList() {
   const { supabase, salon, role } = await getCurrentSalon();
-  const [staffRes, servicesRes, linksRes] = await Promise.all([
-    supabase.from("staff").select("id, name, role_title, active").eq("salon_id", salon.id).order("created_at"),
+  const canEdit = role === "owner";
+  const [staffRes, servicesRes, linksRes, hoursRes, offRes, invitesRes] = await Promise.all([
+    supabase.from("staff").select("id, name, role_title, active, user_id, calendar_token").eq("salon_id", salon.id).order("created_at"),
     supabase.from("services").select("id, name").eq("salon_id", salon.id).order("created_at"),
     supabase.from("staff_services").select("staff_id, service_id").eq("salon_id", salon.id),
+    supabase.from("staff_hours").select("staff_id, weekday, opens_at, closes_at").eq("salon_id", salon.id),
+    supabase.from("staff_time_off").select("id, staff_id, starts_at, ends_at, reason").eq("salon_id", salon.id).gt("ends_at", new Date().toISOString()).order("starts_at"),
+    // Gli inviti li vede solo il titolare (RLS): per gli altri la lista è vuota
+    canEdit ? supabase.from("salon_invites").select("id, staff_id, email, accepted_at").eq("salon_id", salon.id) : Promise.resolve({ data: [], error: null }),
   ]);
-  if (staffRes.error || servicesRes.error || linksRes.error) throw new Error("Impossibile leggere i collaboratori");
+  for (const r of [staffRes, servicesRes, linksRes, hoursRes, offRes, invitesRes]) {
+    if (r.error) throw new Error("Impossibile leggere i collaboratori");
+  }
 
   const services = servicesRes.data ?? [];
   const staff: StaffItem[] = (staffRes.data ?? []).map((s) => ({
     ...s,
     serviceIds: (linksRes.data ?? []).filter((l) => l.staff_id === s.id).map((l) => l.service_id),
   }));
-  const canEdit = role === "owner";
+  const extras = (id: string, name: string, userId: string | null, calendarToken: string): StaffExtrasData => ({
+    staffId: id,
+    staffName: name,
+    hours: (hoursRes.data ?? []).filter((h) => h.staff_id === id),
+    timeOff: (offRes.data ?? [])
+      .filter((o) => o.staff_id === id)
+      .map((o) => ({ id: o.id, label: `${offFormat.format(new Date(o.starts_at))} – ${offFormat.format(new Date(o.ends_at))}`, reason: o.reason })),
+    invites: (invitesRes.data ?? []).filter((i) => i.staff_id === id).map((i) => ({ id: i.id, email: i.email, accepted: Boolean(i.accepted_at) })),
+    hasAccount: Boolean(userId),
+    calendarPath: `/api/calendario/${calendarToken}`,
+  });
 
   return (
     <div className="space-y-8">
@@ -59,6 +79,7 @@ async function StaffList() {
             {staff.map((s) => (
               <li key={s.id}>
                 <StaffRow member={s} services={services} canEdit={canEdit} />
+                {canEdit && <StaffExtras data={extras(s.id, s.name, s.user_id, s.calendar_token)} />}
               </li>
             ))}
           </ul>
