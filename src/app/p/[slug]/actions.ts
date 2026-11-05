@@ -15,13 +15,13 @@ const ERRORS: Record<string, string> = {
   SB011: "Scrivi il tuo nome (almeno 2 caratteri).",
   SB012: "Controlla il numero di telefono.",
   SB013: "Controlla l'indirizzo email.",
-  SB020: "Questo salone non esiste più.",
+  SB020: "Questa attività non esiste più.",
   SB001: "Questo servizio non è più prenotabile. Ricarica la pagina.",
   SB002: "Questo operatore non è più disponibile. Scegli un altro orario.",
   SB021: "L'orario scelto è troppo vicino o già passato. Scegline un altro.",
   SB022: "Si può prenotare al massimo 90 giorni in anticipo.",
   SB023: "L'orario scelto non è più disponibile. Scegline un altro.",
-  SB024: "Hai già 3 prenotazioni in arrivo in questo salone. Per altre, chiama il salone.",
+  SB024: "Hai già 3 prenotazioni in arrivo qui. Per prenotarne altre, contatta direttamente l'attività.",
 };
 
 const str = (formData: FormData, key: string) => String(formData.get(key) ?? "").trim();

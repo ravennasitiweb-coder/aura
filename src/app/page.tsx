@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { HeroDemo } from "@/components/landing/HeroDemo";
+import { BUSINESS_TYPES } from "@/lib/business-types";
 import { PLANS } from "@/lib/plans";
 
 const STEPS = [
@@ -16,12 +17,6 @@ const FEATURES = [
   { title: "Mai due clienti sulla stessa poltrona", text: "Il sistema blocca un orario appena viene preso, anche se due persone prenotano nello stesso istante." },
   { title: "Orari, pause e servizi come li vuoi tu", text: "Pausa pranzo, giorni di chiusura, chi fa cosa: le prenotazioni rispettano le tue regole." },
   { title: "Dati in Europa, nel rispetto del GDPR", text: "Server in UE, consenso del cliente registrato a ogni prenotazione, e i dati restano tuoi." },
-];
-
-const AUDIENCES = [
-  { title: "Parrucchieri", text: "Colori, pieghe e trattamenti lunghi con la loro durata reale, senza incastri impossibili." },
-  { title: "Barbieri", text: "Slot da un quarto d'ora, taglio e barba con il barbiere giusto, la giornata sempre sotto controllo." },
-  { title: "Estetisti", text: "Trattamenti viso e corpo con durate diverse, assegnati solo a chi li sa fare." },
 ];
 
 const FAQ = [
@@ -56,7 +51,7 @@ export default function Home() {
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-soft">
               I clienti prenotano da soli dalla pagina del tuo salone, a qualsiasi ora, solo negli orari davvero liberi.
-              Tu ritrovi tutto in agenda. Per parrucchieri, barbieri ed estetisti.
+              Tu ritrovi tutto in agenda. Per parrucchieri, barbieri, estetisti, tatuatori, trainer e non solo.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/registrati" className="rounded-full bg-bottle px-6 py-3 font-semibold text-white hover:bg-bottle-dark">
@@ -117,11 +112,11 @@ export default function Home() {
         {/* Per chi */}
         <section className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
           <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">Su misura per il tuo mestiere</h2>
-          <div className="mt-10 grid gap-8 md:grid-cols-3">
-            {AUDIENCES.map((a) => (
-              <div key={a.title}>
-                <h3 className="font-display text-2xl font-bold text-bottle">{a.title}</h3>
-                <p className="mt-2 leading-relaxed text-ink-soft">{a.text}</p>
+          <div className="mt-10 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
+            {BUSINESS_TYPES.map((t) => (
+              <div key={t.id}>
+                <h3 className="font-display text-xl font-bold text-bottle">{t.label}</h3>
+                <p className="mt-2 leading-relaxed text-ink-soft">{t.pitch}</p>
               </div>
             ))}
           </div>

@@ -33,7 +33,7 @@ const STATUS_LABEL: Record<AgendaAppointment["status"], string> = {
 };
 
 const SOURCE_LABEL: Record<AgendaAppointment["source"], string> = {
-  manual: "Inserito in salone",
+  manual: "Inserito a mano",
   online: "Prenotato online",
   chatbot: "Prenotato dall'assistente",
 };
@@ -82,7 +82,7 @@ export function AgendaBoard(props: AgendaProps) {
           <h1 className="font-display text-3xl font-bold capitalize tracking-tight">{formatLongDate(date)}</h1>
           <p className="text-sm text-ink-soft">
             {active.length === 1 ? "1 appuntamento" : `${active.length} appuntamenti`}
-            {openRanges.length === 0 && ", salone chiuso"}
+            {openRanges.length === 0 && ", chiuso"}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">

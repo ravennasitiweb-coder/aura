@@ -24,7 +24,7 @@ export default function HoursPage() {
     <>
       <PageHeader
         title="Orari di apertura"
-        description="Quando il salone accetta appuntamenti. Se fai orario continuato, togli la spunta alla pausa."
+        description="Quando accetti appuntamenti. Se fai orario continuato, togli la spunta alla pausa."
       />
       <Suspense fallback={<p className="text-ink-soft">Caricamento degli orari…</p>}>
         <Hours />

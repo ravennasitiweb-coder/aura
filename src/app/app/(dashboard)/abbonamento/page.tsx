@@ -30,7 +30,7 @@ const dateFormat = new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "lo
 export default function BillingPage({ searchParams }: PageProps<"/app/abbonamento">) {
   return (
     <>
-      <PageHeader title="Abbonamento" description="Il piano del tuo salone. Paghi con carta in modo sicuro tramite Stripe e puoi disdire quando vuoi." />
+      <PageHeader title="Abbonamento" description="Il piano della tua attività. Paghi con carta in modo sicuro tramite Stripe e puoi disdire quando vuoi." />
       <Suspense fallback={<p className="text-ink-soft">Caricamento…</p>}>
         <Billing searchParams={searchParams} />
       </Suspense>

@@ -42,7 +42,7 @@ async function Overview() {
 
       <section aria-labelledby="setup-title" className="rounded-2xl border border-line bg-white p-6">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 id="setup-title" className="font-display text-xl font-bold">Completa il tuo salone</h2>
+          <h2 id="setup-title" className="font-display text-xl font-bold">Completa la configurazione</h2>
           <p className="text-sm text-ink-soft">{completed} di {steps.length} completati</p>
         </div>
         <div className="mt-3 h-2 overflow-hidden rounded-full bg-paper" aria-hidden="true">
@@ -75,7 +75,7 @@ async function Overview() {
       {completed === steps.length && (
         <Link href="/app/agenda" className="flex items-center justify-between rounded-2xl bg-bottle p-6 text-white hover:bg-bottle-dark">
           <span>
-            <span className="block font-display text-xl font-bold">Il salone è pronto</span>
+            <span className="block font-display text-xl font-bold">È tutto pronto</span>
             <span className="text-mint">Apri l&apos;agenda e inserisci i tuoi appuntamenti.</span>
           </span>
           <span className="rounded-full bg-white px-5 py-2.5 font-semibold text-bottle">Apri l&apos;agenda</span>

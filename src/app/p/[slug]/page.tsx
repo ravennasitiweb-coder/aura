@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { businessType, placeWith } from "@/lib/business-types";
 import { getPublicSalon, publicToday } from "@/lib/public-booking";
 import { BookingFlow } from "./BookingFlow";
 
@@ -27,6 +28,7 @@ async function SalonBooking({ params }: { params: PageProps<"/p/[slug]">["params
   const { slug } = await params;
   const info = await getPublicSalon(slug);
   if (!info) notFound();
+  const type = businessType(info.salon.business_type);
 
   return (
     <>
@@ -34,13 +36,16 @@ async function SalonBooking({ params }: { params: PageProps<"/p/[slug]">["params
         <div className="mx-auto max-w-2xl px-4 pb-8 pt-10">
           <p className="text-sm text-mint">Prenota online</p>
           <h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">{info.salon.name}</h1>
-          {info.salon.city && <p className="mt-1 text-mint">{info.salon.city}</p>}
+          <p className="mt-1 text-mint">
+            {type.label}
+            {info.salon.city && `, ${info.salon.city}`}
+          </p>
         </div>
       </header>
       <main className="mx-auto max-w-2xl px-4 py-6">
         {info.services.length === 0 ? (
           <p className="rounded-2xl border border-line bg-white p-6 text-ink-soft">
-            Al momento non è possibile prenotare online. Contatta direttamente il salone.
+            Al momento non è possibile prenotare online. Contatta direttamente {placeWith(type, "the")}.
           </p>
         ) : (
           <BookingFlow slug={info.salon.slug} info={info} today={publicToday()} />

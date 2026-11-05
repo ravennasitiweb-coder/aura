@@ -15,7 +15,7 @@ const figtree = Figtree({
 export const metadata: Metadata = {
   title: "SmartBooking — Prenotazioni online per saloni",
   description:
-    "Agenda online e pagina di prenotazione per parrucchieri, barbieri ed estetisti: i clienti prenotano da soli, 24 ore su 24.",
+    "Agenda online e pagina di prenotazione per saloni, barbieri, estetisti, tatuatori, trainer e altre attività su appuntamento: i clienti prenotano da soli, 24 ore su 24.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

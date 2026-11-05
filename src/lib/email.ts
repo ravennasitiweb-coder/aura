@@ -55,7 +55,7 @@ export async function sendBookingConfirmation(b: {
     `la tua prenotazione da ${b.salonName} è confermata.`,
     `${b.serviceName} con ${b.staffName}, ${when}.`,
     "",
-    "Se non puoi venire, avvisa il salone il prima possibile.",
+    `Se non puoi venire, avvisa ${b.salonName} il prima possibile.`,
   ].join("\n");
   const html = `
     <div style="font-family:Arial,sans-serif;max-width:480px;margin:auto;color:#1e2b2f">
@@ -67,7 +67,7 @@ export async function sendBookingConfirmation(b: {
         <p>Ciao ${escapeHtml(b.customerName)},</p>
         <p style="font-size:18px;margin:16px 0"><strong>${escapeHtml(when)}</strong></p>
         <p>${escapeHtml(b.serviceName)} con ${escapeHtml(b.staffName)}</p>
-        <p style="color:#4a5a5f;font-size:14px;margin-top:24px">Se non puoi venire, avvisa il salone il prima possibile.</p>
+        <p style="color:#4a5a5f;font-size:14px;margin-top:24px">Se non puoi venire, avvisa ${escapeHtml(b.salonName)} il prima possibile.</p>
       </div>
     </div>`;
   await sendEmail(b.to, subject, html, text);

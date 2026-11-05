@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 // l'utente e il suo salone. Se non c'è un utente valido, rimanda al login.
 // cache() evita di ripetere le stesse richieste più volte nella stessa pagina.
 
-export type Salon = { id: string; name: string; slug: string; city: string | null };
+export type Salon = { id: string; name: string; slug: string; city: string | null; business_type: string };
 export type Role = "owner" | "staff";
 
 export const requireUser = cache(async () => {
@@ -24,7 +24,7 @@ export const getCurrentSalon = cache(async () => {
   const { supabase, user } = await requireUser();
   const { data, error } = await supabase
     .from("salon_members")
-    .select("role, salon:salons (id, name, slug, city)")
+    .select("role, salon:salons (id, name, slug, city, business_type)")
     .eq("user_id", user.id)
     .order("created_at")
     .limit(1)

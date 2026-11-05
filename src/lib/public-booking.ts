@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 export type PublicService = { id: string; name: string; duration_min: number; price_cents: number };
 export type PublicStaff = { id: string; name: string; service_ids: string[] };
 export type PublicSalonInfo = {
-  salon: { name: string; city: string | null; slug: string };
+  salon: { name: string; city: string | null; slug: string; business_type?: string };
   services: PublicService[];
   staff: PublicStaff[];
   open_weekdays: number[];

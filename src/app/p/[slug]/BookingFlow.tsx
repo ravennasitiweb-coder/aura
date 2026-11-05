@@ -182,7 +182,7 @@ export function BookingFlow({ slug, info, today }: { slug: string; info: PublicS
           {loading ? (
             <p className="text-ink-soft">Cerco gli orari liberi…</p>
           ) : !isOpenDay(date) ? (
-            <p className="text-ink-soft">Il salone è chiuso in questo giorno. Scegline un altro.</p>
+            <p className="text-ink-soft">In questo giorno è chiuso. Scegline un altro.</p>
           ) : visibleSlots.length === 0 ? (
             <p className="text-ink-soft">Nessun orario libero in questo giorno. Prova un altro giorno.</p>
           ) : (
@@ -222,7 +222,7 @@ export function BookingFlow({ slug, info, today }: { slug: string; info: PublicS
             <div>
               <label htmlFor="phone" className="text-sm font-semibold">Telefono</label>
               <input id="phone" name="phone" type="tel" required maxLength={30} autoComplete="tel" className={INPUT} />
-              <p className="mt-1 text-xs text-ink-soft">Il salone lo userà solo per comunicazioni sull&apos;appuntamento.</p>
+              <p className="mt-1 text-xs text-ink-soft">Verrà usato solo per comunicazioni sull&apos;appuntamento.</p>
             </div>
             <div>
               <label htmlFor="email" className="text-sm font-semibold">
@@ -327,7 +327,7 @@ function Confirmation({ booking, onAnother }: { booking: Booking; onAnother: () 
           Prenota un altro appuntamento
         </button>
       </div>
-      <p className="mt-6 text-sm text-ink-soft">Se non puoi venire, avvisa il salone il prima possibile.</p>
+      <p className="mt-6 text-sm text-ink-soft">Se non puoi venire, avvisa il prima possibile.</p>
     </section>
   );
 }

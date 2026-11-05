@@ -3,6 +3,7 @@
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireOwner } from "@/lib/auth";
+import { isBusinessType } from "@/lib/business-types";
 import { WEEKDAYS, parsePriceToCents } from "@/lib/format";
 import { slugify } from "@/lib/slug";
 
@@ -170,13 +171,18 @@ export async function saveSalonSettings(_prev: ActionState, formData: FormData):
   const name = str(formData, "name");
   const city = str(formData, "city");
   const slug = slugify(str(formData, "slug"));
+  const type = str(formData, "business_type");
 
+  if (!isBusinessType(type)) return { error: "Scegli il tipo di attività." };
   if (name.length < 2 || name.length > 80) return { error: "Il nome deve avere tra 2 e 80 caratteri." };
   if (slug.length < 3) return { error: "L'indirizzo deve avere almeno 3 caratteri (lettere, numeri e trattini)." };
 
-  const { error } = await supabase.from("salons").update({ name, city: city || null, slug }).eq("id", salon.id);
+  const { error } = await supabase
+    .from("salons")
+    .update({ name, city: city || null, slug, business_type: type })
+    .eq("id", salon.id);
   if (error) {
-    if (error.code === "23505") return { error: `L'indirizzo /p/${slug} è già usato da un altro salone.` };
+    if (error.code === "23505") return { error: `L'indirizzo /p/${slug} è già usato da un'altra attività.` };
     return { error: GENERIC_ERROR };
   }
   refresh();

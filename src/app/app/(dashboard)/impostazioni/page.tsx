@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "Impostazioni — SmartBooking" };
 export default function SettingsPage() {
   return (
     <>
-      <PageHeader title="Impostazioni" description="I dati del salone che vedranno i tuoi clienti." />
+      <PageHeader title="Impostazioni" description="I dati della tua attività che vedranno i tuoi clienti." />
       <Suspense fallback={<p className="text-ink-soft">Caricamento…</p>}>
         <Settings />
       </Suspense>
