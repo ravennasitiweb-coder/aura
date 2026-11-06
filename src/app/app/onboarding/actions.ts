@@ -38,8 +38,8 @@ export async function createSalon(_prev: OnboardingState, formData: FormData): P
 
   // Servizi di esempio del settore, se richiesti: si modificano poi in Servizi.
   // Se l'inserimento non riesce l'attività esiste comunque: si aggiungono a mano.
+  const salonId = (salon as { id: string }).id;
   if (withServices) {
-    const salonId = (salon as { id: string }).id;
     await supabase.from("services").insert(
       businessType(rawType).services.map((s) => ({
         salon_id: salonId,
@@ -48,6 +48,18 @@ export async function createSalon(_prev: OnboardingState, formData: FormData): P
         price_cents: s.priceEur * 100,
       })),
     );
+  }
+
+  // Ristoranti: 6 tavoli da 4 per partire, collegati a tutti i turni (si cambiano in Sala e tavoli)
+  if (businessType(rawType).tables) {
+    const { data: tables } = await supabase
+      .from("staff")
+      .insert(Array.from({ length: 6 }, (_, i) => ({ salon_id: salonId, name: `Tavolo ${i + 1}`, seats: 4 })))
+      .select("id");
+    const { data: services } = await supabase.from("services").select("id").eq("salon_id", salonId);
+    const links = (tables ?? []).flatMap((t) => (services ?? []).map((sv) => ({ salon_id: salonId, staff_id: t.id, service_id: sv.id })));
+    if (links.length > 0) await supabase.from("staff_services").insert(links);
+    redirect("/app/sala");
   }
 
   redirect("/app");

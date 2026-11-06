@@ -7,7 +7,8 @@ import { createClient } from "@/lib/supabase/server";
 // del database, le uniche accessibili ai visitatori.
 
 export type PublicService = { id: string; name: string; duration_min: number; price_cents: number };
-export type PublicStaff = { id: string; name: string; service_ids: string[] };
+/** seats: posti del tavolo (solo ristoranti), null per le persone */
+export type PublicStaff = { id: string; name: string; seats: number | null; service_ids: string[] };
 export type PublicSalonInfo = {
   salon: { name: string; city: string | null; slug: string; business_type?: string };
   services: PublicService[];
@@ -45,6 +46,7 @@ export async function getPublicFreeSlots(
   date: string,
   staffId: string | null,
   ignore?: BusyBlock,
+  party?: number,
 ): Promise<FreeSlot[]> {
   const info = await getPublicSalon(slug);
   if (!info || !isValidDate(date)) return [];
@@ -55,7 +57,7 @@ export async function getPublicFreeSlots(
   const service = info.services.find((s) => s.id === serviceId);
   if (!service) return [];
   const staffIds = info.staff
-    .filter((s) => s.service_ids.includes(serviceId) && (!staffId || s.id === staffId))
+    .filter((s) => s.service_ids.includes(serviceId) && (!staffId || s.id === staffId) && (!party || (s.seats ?? 0) >= party))
     .map((s) => s.id);
   if (staffIds.length === 0) return [];
 

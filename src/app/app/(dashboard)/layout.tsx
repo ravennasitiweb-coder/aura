@@ -4,6 +4,7 @@ import { Logo } from "@/components/Logo";
 import { AppNav } from "@/components/app/AppNav";
 import { signOut } from "@/app/(auth)/actions";
 import { getCurrentSalon } from "@/lib/auth";
+import { businessType } from "@/lib/business-types";
 
 export default function AppLayout({ children }: LayoutProps<"/app">) {
   return (
@@ -21,7 +22,9 @@ export default function AppLayout({ children }: LayoutProps<"/app">) {
           </Suspense>
         </div>
         <div className="px-3 pb-3 pt-2 lg:flex-1 lg:pt-4">
-          <AppNav />
+          <Suspense fallback={<AppNav />}>
+            <SalonNav />
+          </Suspense>
         </div>
         <div className="hidden border-t border-line p-5 lg:block">
           <Link href="/demo" className="block text-sm text-ink-soft hover:text-ink">Apri la demo</Link>
@@ -33,6 +36,11 @@ export default function AppLayout({ children }: LayoutProps<"/app">) {
       <main className="w-full max-w-5xl flex-1 px-4 py-8 sm:px-8">{children}</main>
     </div>
   );
+}
+
+async function SalonNav() {
+  const { salon } = await getCurrentSalon();
+  return <AppNav tables={businessType(salon.business_type).tables === true} />;
 }
 
 async function SalonBadge() {

@@ -5,6 +5,7 @@ import { CopyLink } from "@/components/app/CopyLink";
 import { GapsCard } from "@/components/app/GapsCard";
 import { getTomorrowGaps } from "@/lib/gaps";
 import { getCurrentSalon } from "@/lib/auth";
+import { businessType } from "@/lib/business-types";
 
 export const metadata: Metadata = { title: "Panoramica — SmartBooking" };
 
@@ -27,7 +28,12 @@ async function Overview() {
     supabase.from("staff_services").select("staff_id", { count: "exact", head: true }).eq("salon_id", salon.id),
   ]);
 
-  const steps = [
+  const tables = businessType(salon.business_type).tables === true;
+  const steps = tables ? [
+    { done: (services.count ?? 0) > 0, title: "Controlla i turni", text: "Pranzo, cena e quanto dura un tavolo.", href: "/app/servizi", detail: `${services.count ?? 0} turni` },
+    { done: (staff.count ?? 0) > 0, title: "Disegna la sala", text: "Quanti tavoli, quanti posti e dove sono.", href: "/app/sala", detail: `${staff.count ?? 0} tavoli` },
+    { done: (hours.count ?? 0) > 0, title: "Imposta gli orari di apertura", text: "Giorni e orari di pranzo e cena.", href: "/app/orari", detail: (hours.count ?? 0) > 0 ? "impostati" : "da impostare" },
+  ] : [
     { done: (services.count ?? 0) > 0, title: "Aggiungi i tuoi servizi", text: "Nome, durata e prezzo di ciò che offri.", href: "/app/servizi", detail: `${services.count ?? 0} servizi` },
     { done: (staff.count ?? 0) > 0, title: "Aggiungi chi lavora con te", text: "Anche solo te stesso, se lavori da solo.", href: "/app/collaboratori", detail: `${staff.count ?? 0} collaboratori` },
     { done: (links.count ?? 0) > 0, title: "Indica chi fa quali servizi", text: "Così l'agenda propone l'operatore giusto.", href: "/app/collaboratori", detail: `${links.count ?? 0} abbinamenti` },

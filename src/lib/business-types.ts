@@ -6,9 +6,9 @@
 // Sono tutte attività "un cliente, un professionista, un servizio a durata
 // fissa". Restano escluse quelle sanitarie (dati sulla salute, GDPR più severo).
 
-export type BusinessCategory = "Bellezza" | "Benessere" | "Sport" | "Lezioni" | "Professionisti" | "Casa e servizi" | "Animali";
+export type BusinessCategory = "Bellezza" | "Benessere" | "Sport" | "Lezioni" | "Professionisti" | "Casa e servizi" | "Animali" | "Ristorazione";
 
-export const CATEGORIES: BusinessCategory[] = ["Bellezza", "Benessere", "Sport", "Lezioni", "Professionisti", "Casa e servizi", "Animali"];
+export const CATEGORIES: BusinessCategory[] = ["Bellezza", "Benessere", "Sport", "Lezioni", "Professionisti", "Casa e servizi", "Animali", "Ristorazione"];
 
 export type BusinessType = {
   id: string;
@@ -25,6 +25,8 @@ export type BusinessType = {
   exampleName: string;
   /** Servizi proposti alla registrazione: prezzi di esempio, modificabili */
   services: { name: string; durationMin: number; priceEur: number }[];
+  /** Si prenota un tavolo per N persone invece di un professionista */
+  tables?: boolean;
   /** Attività in evidenza nella landing, con la sua frase di presentazione */
   featured?: { pitch: string };
 };
@@ -528,6 +530,12 @@ export const BUSINESS_TYPES: BusinessType[] = [
     exampleName: "Passeggiate a 4 zampe",
     services: [s("Passeggiata 30 minuti", 30, 10), s("Passeggiata 60 minuti", 60, 18), s("Passeggiata di gruppo", 60, 12)],
   },
+
+  // --- Ristorazione: si prenota un tavolo, non una persona --------------------
+  { id: "ristorante", category: "Ristorazione", label: "Ristorante", place: "ristorante", articles: IL, staff: { one: "tavolo", many: "tavoli" }, exampleName: "Ristorante Da Gino", services: [s("Pranzo", 90, 0), s("Cena", 120, 0), s("Cena di gruppo", 150, 0)], tables: true },
+  { id: "pizzeria", category: "Ristorazione", label: "Pizzeria", place: "pizzeria", articles: LA, staff: { one: "tavolo", many: "tavoli" }, exampleName: "Pizzeria Vesuvio", services: [s("Pranzo", 60, 0), s("Cena", 90, 0), s("Cena di gruppo", 120, 0)], tables: true },
+  { id: "trattoria", category: "Ristorazione", label: "Trattoria e osteria", place: "trattoria", articles: LA, staff: { one: "tavolo", many: "tavoli" }, exampleName: "Osteria del Borgo", services: [s("Pranzo", 90, 0), s("Cena", 120, 0), s("Cena di gruppo", 150, 0)], tables: true },
+  { id: "agriturismo", category: "Ristorazione", label: "Agriturismo", place: "agriturismo", articles: L_, staff: { one: "tavolo", many: "tavoli" }, exampleName: "Agriturismo La Quercia", services: [s("Pranzo", 120, 0), s("Cena", 150, 0), s("Pranzo della domenica", 150, 0)], tables: true },
 ];
 
 export const DEFAULT_BUSINESS_TYPE = "parrucchiere";

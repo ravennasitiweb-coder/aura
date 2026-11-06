@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { addDays, isoWeekday, minutesToTime, type FreeSlot } from "@/lib/agenda";
 import { formatDuration, formatPrice } from "@/lib/format";
+import { businessType } from "@/lib/business-types";
 import type { PublicSalonInfo } from "@/lib/public-booking";
 import { book, loadSlots, type BookingResult } from "./actions";
 import { WaitlistForm } from "./WaitlistForm";
@@ -30,11 +31,15 @@ export function BookingFlow({ slug, info, today }: { slug: string; info: PublicS
   const [error, setError] = useState<string | null>(null);
   const [booking, setBooking] = useState<Booking | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
+  // Ristoranti: si sceglie il numero di persone, non chi ci serve
+  const tables = businessType(info.salon.business_type).tables === true;
+  const maxParty = Math.max(0, ...info.staff.map((s) => s.seats ?? 0));
+  const [party, setParty] = useState(2);
 
   const service = info.services.find((s) => s.id === serviceId) ?? null;
   const capableStaff = useMemo(
-    () => (serviceId ? info.staff.filter((s) => s.service_ids.includes(serviceId)) : []),
-    [info.staff, serviceId],
+    () => (serviceId ? info.staff.filter((s) => s.service_ids.includes(serviceId) && (!tables || (s.seats ?? 0) >= party)) : []),
+    [info.staff, serviceId, tables, party],
   );
   const days = Array.from({ length: VISIBLE_DAYS }, (_, i) => addDays(today, i));
   const isOpenDay = (d: string) => info.open_weekdays.includes(isoWeekday(d));
@@ -43,7 +48,7 @@ export function BookingFlow({ slug, info, today }: { slug: string; info: PublicS
     if (!serviceId || !date) return;
     let cancelled = false;
     startLoading(async () => {
-      const result = await loadSlots(slug, serviceId, date, staffId || null);
+      const result = await loadSlots(slug, serviceId, date, staffId || null, tables ? party : undefined);
       if (!cancelled) {
         setSlots(result);
         setSlot(null);
@@ -52,10 +57,10 @@ export function BookingFlow({ slug, info, today }: { slug: string; info: PublicS
     return () => {
       cancelled = true;
     };
-  }, [slug, serviceId, date, staffId, reloadKey]);
+  }, [slug, serviceId, date, staffId, reloadKey, tables, party]);
 
   // Con "chiunque": un solo pulsante per orario
-  const visibleSlots = staffId ? slots : slots.filter((s, i) => slots.findIndex((o) => o.start === s.start) === i);
+  const visibleSlots = staffId && !tables ? slots : slots.filter((s, i) => slots.findIndex((o) => o.start === s.start) === i);
   const staffName = (id: string) => info.staff.find((s) => s.id === id)?.name ?? "";
 
   function submit(formData: FormData) {
@@ -64,6 +69,7 @@ export function BookingFlow({ slug, info, today }: { slug: string; info: PublicS
     formData.set("staff_id", slot.staffId);
     formData.set("date", date);
     formData.set("time", minutesToTime(slot.start));
+    if (tables) formData.set("party", String(party));
     setError(null);
     startSubmitting(async () => {
       const result = await book(slug, formData);
@@ -82,7 +88,7 @@ export function BookingFlow({ slug, info, today }: { slug: string; info: PublicS
   return (
     <div className="space-y-5">
       {/* 1. Servizio */}
-      <Step number={1} title="Scegli il servizio">
+      <Step number={1} title={tables ? "Pranzo o cena?" : "Scegli il servizio"}>
         <div className="space-y-2">
           {info.services.map((s) => (
             <label
@@ -116,7 +122,22 @@ export function BookingFlow({ slug, info, today }: { slug: string; info: PublicS
       {/* 2. Giorno e operatore */}
       {service && (
         <Step number={2} title="Scegli il giorno">
-          {capableStaff.length > 1 && (
+          {tables && (
+            <label className="mb-4 block text-sm text-ink-soft">
+              Quante persone?{" "}
+              <select
+                value={party}
+                onChange={(e) => setParty(Number(e.target.value))}
+                className="ml-1 rounded-lg border border-line bg-white px-3 py-2 font-semibold text-ink"
+              >
+                {Array.from({ length: Math.max(1, maxParty) }, (_, i) => i + 1).map((n) => (
+                  <option key={n} value={n}>{n === 1 ? "1 persona" : `${n} persone`}</option>
+                ))}
+              </select>
+              <span className="mt-1 block text-xs">Per gruppi più numerosi contatta direttamente il locale.</span>
+            </label>
+          )}
+          {!tables && capableStaff.length > 1 && (
             <div className="mb-4">
               <p className="mb-2 text-sm text-ink-soft">Con chi?</p>
               <div className="flex flex-wrap gap-2">
@@ -186,8 +207,8 @@ export function BookingFlow({ slug, info, today }: { slug: string; info: PublicS
             <p className="text-ink-soft">In questo giorno è chiuso. Scegline un altro.</p>
           ) : visibleSlots.length === 0 ? (
             <div className="space-y-3">
-              <p className="text-ink-soft">Nessun orario libero in questo giorno. Prova un altro giorno, oppure:</p>
-              <WaitlistForm slug={slug} serviceId={service.id} staffId={staffId} date={date} />
+              <p className="text-ink-soft">Nessun orario libero in questo giorno. Prova un altro giorno{tables ? "." : ", oppure:"}</p>
+              {!tables && <WaitlistForm slug={slug} serviceId={service.id} staffId={staffId} date={date} />}
             </div>
           ) : (
             <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
@@ -216,7 +237,8 @@ export function BookingFlow({ slug, info, today }: { slug: string; info: PublicS
       {service && date && slot && (
         <Step number={4} title="I tuoi dati">
           <p className="mb-4 rounded-xl bg-mint px-4 py-3 text-bottle-dark">
-            <strong>{service.name}</strong> alle <strong>{minutesToTime(slot.start)}</strong> con {staffName(slot.staffId)}
+            <strong>{service.name}</strong> alle <strong>{minutesToTime(slot.start)}</strong>{" "}
+            {tables ? `, tavolo per ${party}` : `con ${staffName(slot.staffId)}`}
           </p>
           <form action={submit} className="space-y-4">
             <div>

@@ -3,7 +3,7 @@
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireOwner } from "@/lib/auth";
-import { isBusinessType } from "@/lib/business-types";
+import { businessType, isBusinessType } from "@/lib/business-types";
 import { WEEKDAYS, parsePriceToCents } from "@/lib/format";
 import { slugify } from "@/lib/slug";
 
@@ -32,8 +32,14 @@ export async function createService(_prev: ActionState, formData: FormData): Pro
   const { supabase, salon } = await requireOwner();
   const parsed = readService(formData);
   if ("error" in parsed) return { error: parsed.error };
-  const { error } = await supabase.from("services").insert({ ...parsed.value, active: true, salon_id: salon.id });
+  const { data: service, error } = await supabase.from("services").insert({ ...parsed.value, active: true, salon_id: salon.id }).select("id").single();
   if (error) return { error: GENERIC_ERROR };
+  // Ristoranti: un nuovo turno è prenotabile su tutti i tavoli
+  if (businessType(salon.business_type).tables) {
+    const { data: tables } = await supabase.from("staff").select("id").eq("salon_id", salon.id).not("seats", "is", null);
+    if (tables?.length)
+      await supabase.from("staff_services").insert(tables.map((t) => ({ salon_id: salon.id, staff_id: t.id, service_id: service.id })));
+  }
   refresh();
   return { ok: `${parsed.value.name} aggiunto.` };
 }

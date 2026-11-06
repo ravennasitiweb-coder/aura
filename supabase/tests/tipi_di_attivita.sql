@@ -29,12 +29,12 @@ begin
 
   -- 3. Un tipo inventato viene rifiutato, sia in creazione sia in modifica
   begin
-    perform public.create_salon('Ristorante', 'test-tipo-c-' || left(owner_a::text, 8), null, 'ristorante');
+    perform public.create_salon('Ristorante', 'test-tipo-c-' || left(owner_a::text, 8), null, 'astronave');
     raise exception 'TEST FALLITO: accettato un tipo inesistente in creazione';
   exception when check_violation then null;
   end;
   begin
-    update public.salons set business_type = 'ristorante' where id = salon_a;
+    update public.salons set business_type = 'astronave' where id = salon_a;
     raise exception 'TEST FALLITO: accettato un tipo inesistente in modifica';
   exception when check_violation then null;
   end;

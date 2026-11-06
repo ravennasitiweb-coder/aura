@@ -19,22 +19,25 @@ const LINKS = [
 
 // Il menu compare subito; la voce attiva si evidenzia appena si conosce
 // l'indirizzo della pagina (Next.js lo richiede dentro <Suspense>).
-export function AppNav() {
+// Ristoranti: "Sala e tavoli" al posto di "Collaboratori"
+const TABLE_LINKS = LINKS.map((l) => (l.href === "/app/collaboratori" ? { href: "/app/sala", label: "Sala e tavoli" } : l));
+
+export function AppNav({ tables = false }: { tables?: boolean }) {
   return (
-    <Suspense fallback={<NavLinks pathname={null} />}>
-      <ActiveNav />
+    <Suspense fallback={<NavLinks pathname={null} tables={tables} />}>
+      <ActiveNav tables={tables} />
     </Suspense>
   );
 }
 
-function ActiveNav() {
-  return <NavLinks pathname={usePathname()} />;
+function ActiveNav({ tables }: { tables: boolean }) {
+  return <NavLinks pathname={usePathname()} tables={tables} />;
 }
 
-function NavLinks({ pathname }: { pathname: string | null }) {
+function NavLinks({ pathname, tables }: { pathname: string | null; tables: boolean }) {
   return (
     <nav aria-label="Area riservata" className="flex gap-1 overflow-x-auto lg:flex-col">
-      {LINKS.map((l) => {
+      {(tables ? TABLE_LINKS : LINKS).map((l) => {
         const active = pathname !== null && (l.href === "/app" ? pathname === "/app" : pathname.startsWith(l.href));
         return (
           <Link

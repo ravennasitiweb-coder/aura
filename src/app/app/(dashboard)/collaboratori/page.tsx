@@ -28,7 +28,7 @@ async function StaffList() {
   const { supabase, salon, role } = await getCurrentSalon();
   const canEdit = role === "owner";
   const [staffRes, servicesRes, linksRes, hoursRes, offRes, invitesRes] = await Promise.all([
-    supabase.from("staff").select("id, name, role_title, active, user_id, calendar_token").eq("salon_id", salon.id).order("created_at"),
+    supabase.from("staff").select("id, name, role_title, active, user_id, calendar_token").eq("salon_id", salon.id).is("seats", null).order("created_at"),
     supabase.from("services").select("id, name").eq("salon_id", salon.id).order("created_at"),
     supabase.from("staff_services").select("staff_id, service_id").eq("salon_id", salon.id),
     supabase.from("staff_hours").select("staff_id, weekday, opens_at, closes_at").eq("salon_id", salon.id),

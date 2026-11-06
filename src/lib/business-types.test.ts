@@ -78,7 +78,7 @@ test("gli id coincidono con quelli ammessi dall'ultima migrazione del database",
 
 test("valori sconosciuti ricadono sul tipo predefinito", () => {
   assert.equal(businessType("tatuatore").label, "Studio tatuaggi");
-  assert.equal(businessType("ristorante").id, "parrucchiere");
+  assert.equal(businessType("astronave").id, "parrucchiere");
   assert.equal(businessType(null).id, "parrucchiere");
   assert.equal(isBusinessType("lash_maker"), true);
   assert.equal(isBusinessType("<script>"), false);

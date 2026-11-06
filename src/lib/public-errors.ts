@@ -12,5 +12,7 @@ export const PUBLIC_ERRORS: Record<string, string> = {
   SB023: "L'orario scelto non è più disponibile. Scegline un altro.",
   SB024: "Hai già 3 prenotazioni o iscrizioni in arrivo qui. Per altre, contatta direttamente l'attività.",
   SB025: "In quell'orario l'operatore è assente. Scegline un altro.",
+  SB030: "Indica quante persone siete.",
+  SB031: "Nessun tavolo libero per questo numero di persone a quell'ora. Prova un altro orario o chiama il locale.",
   SB026: "Non è più possibile modificare questo appuntamento online. Contatta direttamente l'attività.",
 };

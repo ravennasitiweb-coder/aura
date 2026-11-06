@@ -18,19 +18,21 @@ export type SimpleResult = { ok: true } | { ok: false; error: string };
 
 const str = (formData: FormData, key: string) => String(formData.get(key) ?? "").trim();
 
-export async function loadSlots(slug: string, serviceId: string, date: string, staffId: string | null): Promise<FreeSlot[]> {
-  return getPublicFreeSlots(slug, serviceId, date, staffId);
+export async function loadSlots(slug: string, serviceId: string, date: string, staffId: string | null, party?: number): Promise<FreeSlot[]> {
+  return getPublicFreeSlots(slug, serviceId, date, staffId, undefined, party);
 }
 
 export async function book(slug: string, formData: FormData): Promise<BookingResult> {
   // Campo trappola: invisibile alle persone, i bot spesso lo compilano
   if (str(formData, "website")) return { ok: false, error: "Richiesta non valida." };
 
+  // Ristoranti: si indica il numero di persone e il tavolo lo sceglie il database
+  const party = Number(str(formData, "party"));
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("public_book", {
+  const { data, error } = await supabase.rpc(party ? "public_book_table" : "public_book", {
     p_slug: slug,
     p_service_id: str(formData, "service_id"),
-    p_staff_id: str(formData, "staff_id"),
+    ...(party ? { p_party: party } : { p_staff_id: str(formData, "staff_id") }),
     p_date: str(formData, "date"),
     p_time: str(formData, "time"),
     p_name: str(formData, "name"),
@@ -45,11 +47,12 @@ export async function book(slug: string, formData: FormData): Promise<BookingRes
     if (error.code === "23P01") return { ok: false, slotTaken: true, error: "Qualcuno ha appena prenotato questo orario. Scegline un altro." };
     return {
       ok: false,
-      slotTaken: ["SB021", "SB023", "SB025"].includes(error.code),
+      slotTaken: ["SB021", "SB023", "SB025", "SB031"].includes(error.code),
       error: PUBLIC_ERRORS[error.code] ?? "Non è stato possibile prenotare. Riprova tra poco.",
     };
   }
   const booking = data as Extract<BookingResult, { ok: true }>["booking"];
+  if (party) booking.staff_name = `tavolo per ${party}`;
 
   // Email di conferma con il link per spostare o annullare: parte dopo la risposta
   const email = str(formData, "email");
