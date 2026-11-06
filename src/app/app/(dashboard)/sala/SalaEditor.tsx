@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { addTables, deleteTable, saveFloorPlan, updateTable, type SalaResult } from "@/app/app/sala-actions";
+import { addTables, aiArrange, deleteTable, saveFloorPlan, updateTable, type SalaResult } from "@/app/app/sala-actions";
+import { autoArrange, checkLayout, estimateCovers, suggestTables, tableSize } from "@/lib/sala";
 
 export type Table = { id: string; name: string; seats: number; active: boolean; plan: { x: number; y: number; shape?: "round" | "square" } | null };
 type Plan = { widthCm: number; depthCm: number; photo: string | null };
@@ -10,8 +11,7 @@ type Pos = { x: number; y: number; shape: "round" | "square" };
 const INPUT = "w-full rounded-lg border border-line bg-white px-3 py-2 outline-none focus:border-bottle";
 const BUTTON = "rounded-full bg-bottle px-5 py-2.5 font-semibold text-white hover:bg-bottle-dark disabled:opacity-60";
 
-// Lato del tavolo in cm, in base ai posti (per disegnarlo in scala)
-const sizeFor = (seats: number) => Math.min(60 + seats * 15, 260);
+const sizeFor = tableSize;
 
 /** Posizioni di partenza: i tavoli senza posto vengono messi in griglia */
 function initialPositions(tables: Table[], plan: Plan): Record<string, Pos> {
@@ -41,7 +41,7 @@ async function shrinkPhoto(file: File): Promise<string> {
   }
 }
 
-export function SalaEditor({ tables, plan, canEdit }: { tables: Table[]; plan: Plan; canEdit: boolean }) {
+export function SalaEditor({ tables, plan, canEdit, aiEnabled }: { tables: Table[]; plan: Plan; canEdit: boolean; aiEnabled: boolean }) {
   const [widthM, setWidthM] = useState(plan.widthCm / 100);
   const [depthM, setDepthM] = useState(plan.depthCm / 100);
   const [photo, setPhoto] = useState(plan.photo);
@@ -50,6 +50,8 @@ export function SalaEditor({ tables, plan, canEdit }: { tables: Table[]; plan: P
   const [selected, setSelected] = useState<string | null>(null);
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
   const [pending, start] = useTransition();
+  const [aiRequest, setAiRequest] = useState("");
+  const [aiNote, setAiNote] = useState<string | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const dragging = useRef<string | null>(null);
 
@@ -203,6 +205,44 @@ export function SalaEditor({ tables, plan, canEdit }: { tables: Table[]; plan: P
         )}
       </section>
 
+      {canEdit && (
+        <Assistant
+          tables={tables}
+          widthCm={widthCm}
+          depthCm={depthCm}
+          positions={allPos}
+          pending={pending}
+          aiEnabled={aiEnabled}
+          aiRequest={aiRequest}
+          setAiRequest={setAiRequest}
+          aiNote={aiNote}
+          onArrange={() => {
+            const { placed, left } = autoArrange(tables.filter((t) => t.active), widthCm, depthCm);
+            setPositions((p) => ({ ...p, ...Object.fromEntries(placed.map((t) => [t.id, { x: t.x, y: t.y, shape: allPos[t.id]?.shape ?? "round" }])) }));
+            setAiNote(left.length ? `${left.length} tavoli non entrano nella sala: aumenta le misure o eliminane qualcuno.` : "Tavoli sistemati in file ordinate. Controlla e premi “Salva la pianta”.");
+          }}
+          onAddSuggested={(list) =>
+            run(async () => {
+              for (const t of list) {
+                const r = await addTables(t.count, t.seats);
+                if (!r.ok) return r;
+              }
+              return { ok: true, message: "Tavoli consigliati aggiunti. Ora premi “Sistema automaticamente”." };
+            })
+          }
+          onAi={() => {
+            setMessage(null);
+            setAiNote(null);
+            start(async () => {
+              const r = await aiArrange(aiRequest, widthCm, depthCm);
+              if (!r.ok) return setMessage({ ok: false, text: r.error });
+              setPositions((p) => ({ ...p, ...Object.fromEntries(r.positions.map((t) => [t.id, { x: t.x, y: t.y, shape: t.shape }])) }));
+              setAiNote(`${r.note} Controlla la pianta e premi “Salva la pianta”.`.trim());
+            });
+          }}
+        />
+      )}
+
       {message && (
         <p role="status" className={`rounded-xl px-4 py-3 text-sm ${message.ok ? "bg-mint text-bottle-dark" : "border border-cherry/30 bg-cherry/5 text-cherry"}`}>
           {message.text}
@@ -265,6 +305,80 @@ function TableForm(props: {
         <span className="text-ink-soft">(ricorda “Salva la pianta”)</span>
         <button type="button" onClick={onDelete} className="ml-auto text-cherry underline">Elimina tavolo</button>
       </div>
+    </section>
+  );
+}
+
+function Assistant(props: {
+  tables: Table[];
+  widthCm: number;
+  depthCm: number;
+  positions: Record<string, Pos>;
+  pending: boolean;
+  aiEnabled: boolean;
+  aiRequest: string;
+  setAiRequest: (v: string) => void;
+  aiNote: string | null;
+  onArrange: () => void;
+  onAddSuggested: (list: { count: number; seats: number }[]) => void;
+  onAi: () => void;
+}) {
+  const { tables, widthCm, depthCm, positions, pending, aiEnabled, aiRequest, setAiRequest, aiNote } = props;
+  const active = tables.filter((t) => t.active);
+  const seats = active.reduce((n, t) => n + t.seats, 0);
+  const covers = estimateCovers(widthCm, depthCm);
+  const suggested = suggestTables(widthCm, depthCm, seats);
+  const names = Object.fromEntries(tables.map((t) => [t.id, t.name]));
+  const problems = checkLayout(
+    active.filter((t) => positions[t.id]).map((t) => ({ id: t.id, seats: t.seats, ...positions[t.id] })),
+    widthCm,
+    depthCm,
+    names,
+  );
+
+  return (
+    <section className="rounded-2xl border border-line bg-white p-5">
+      <h2 className="font-display text-lg font-bold">Assistente sala</h2>
+      <p className="mt-1 text-sm text-ink-soft">
+        Una sala di {widthCm / 100} × {depthCm / 100} m ospita comodamente circa <strong>{covers} coperti</strong>. Ora ne hai {seats}.
+      </p>
+      {suggested.length > 0 && (
+        <p className="mt-2 text-sm">
+          Consiglio: aggiungi {suggested.map((t) => `${t.count} tavoli da ${t.seats}`).join(", ")}.{" "}
+          <button type="button" disabled={pending} onClick={() => props.onAddSuggested(suggested)} className="font-semibold text-bottle underline">
+            Aggiungili
+          </button>
+        </p>
+      )}
+      <button type="button" disabled={pending || active.length === 0} onClick={props.onArrange} className="mt-4 rounded-full border border-line px-5 py-2.5 text-sm font-semibold hover:border-ink">
+        Sistema automaticamente
+      </button>
+
+      {aiEnabled && (
+        <div className="mt-5">
+          <label htmlFor="ai-request" className="text-sm font-semibold">Oppure descrivi la sala con parole tue</label>
+          <textarea
+            id="ai-request"
+            rows={3}
+            maxLength={600}
+            value={aiRequest}
+            onChange={(e) => setAiRequest(e.target.value)}
+            placeholder="Es. i tavoli da 2 lungo le finestre a sinistra, quelli da 6 in fondo, lascia libero il passaggio verso la cucina in alto a destra"
+            className={`${INPUT} mt-1`}
+          />
+          <button type="button" disabled={pending || aiRequest.trim().length < 5} onClick={props.onAi} className={`${BUTTON} mt-2`}>
+            {pending ? "Ci penso…" : "Chiedi all'assistente"}
+          </button>
+        </div>
+      )}
+
+      {aiNote && <p role="status" className="mt-4 rounded-xl bg-mint px-4 py-3 text-sm text-bottle-dark">{aiNote}</p>}
+      {problems.length > 0 && (
+        <ul className="mt-4 space-y-1 rounded-xl border border-cherry/30 bg-cherry/5 px-4 py-3 text-sm text-cherry">
+          {problems.slice(0, 8).map((p) => <li key={p}>{p}</li>)}
+          {problems.length > 8 && <li>…e altri {problems.length - 8}.</li>}
+        </ul>
+      )}
     </section>
   );
 }

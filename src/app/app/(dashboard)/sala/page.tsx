@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { getCurrentSalon } from "@/lib/auth";
 import { businessType } from "@/lib/business-types";
+import { groqEnabled } from "@/lib/groq";
 import { SalaEditor, type Table } from "./SalaEditor";
 
 export const metadata: Metadata = { title: "Sala e tavoli — SmartBooking" };
@@ -39,6 +40,7 @@ async function Sala() {
       <SalaEditor
         tables={tables}
         canEdit={role === "owner"}
+        aiEnabled={groqEnabled()}
         plan={{ widthCm: planRes.data?.width_cm ?? 1000, depthCm: planRes.data?.depth_cm ?? 800, photo: planRes.data?.photo ?? null }}
       />
     </div>
