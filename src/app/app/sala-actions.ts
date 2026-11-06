@@ -3,7 +3,7 @@
 import { refresh } from "next/cache";
 import { requireOwner } from "@/lib/auth";
 import { businessType } from "@/lib/business-types";
-import { groqEnabled, groqJson } from "@/lib/groq";
+import { AI_LIMIT_MESSAGE, groqEnabled, groqJson, takeAiRequest } from "@/lib/groq";
 import { checkLayout, tableSize } from "@/lib/sala";
 
 // Sala e tavoli dei ristoranti. Un tavolo è una riga di "staff" con i posti (seats).
@@ -109,6 +109,7 @@ export async function aiArrange(request: string, widthCm: number, depthCm: numbe
 
   const { data: tables } = await supabase.from("staff").select("id, name, seats").eq("salon_id", salon.id).not("seats", "is", null).eq("active", true);
   if (!tables?.length) return { ok: false, error: "Aggiungi prima qualche tavolo." };
+  if (!(await takeAiRequest(supabase, salon.id))) return { ok: false, error: AI_LIMIT_MESSAGE };
 
   const system = [
     "Sei un esperto di allestimento di sale ristorante. Disponi i tavoli in una pianta vista dall'alto.",

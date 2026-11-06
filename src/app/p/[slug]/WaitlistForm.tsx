@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useTransition } from "react";
+import { Turnstile, resetTurnstile } from "@/components/Turnstile";
 import { joinWaitlist } from "./actions";
 
 const INPUT = "mt-1 w-full rounded-xl border border-line bg-white px-3 py-2.5 outline-none focus:border-bottle";
@@ -37,6 +38,7 @@ export function WaitlistForm({ slug, serviceId, staffId, date }: { slug: string;
         setError(null);
         start(async () => {
           const r = await joinWaitlist(slug, fd);
+          if (!r.ok) resetTurnstile();
           if (r.ok) setDone(true);
           else setError(r.error);
         });
@@ -68,6 +70,7 @@ export function WaitlistForm({ slug, serviceId, staffId, date }: { slug: string;
         </span>
       </label>
       {error && <p role="alert" className="text-sm text-cherry">{error}</p>}
+      <Turnstile />
       <button type="submit" disabled={pending} className="rounded-full bg-bottle px-5 py-2.5 text-sm font-semibold text-white hover:bg-bottle-dark disabled:opacity-60">
         {pending ? "Iscrizione…" : "Avvisami"}
       </button>

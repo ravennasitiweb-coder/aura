@@ -3,7 +3,7 @@
 import { refresh } from "next/cache";
 import { requireOwner } from "@/lib/auth";
 import { businessType } from "@/lib/business-types";
-import { groqEnabled, groqJson } from "@/lib/groq";
+import { AI_LIMIT_MESSAGE, groqEnabled, groqJson, takeAiRequest } from "@/lib/groq";
 
 // Assistente di configurazione per tutte le attività: dalla descrizione a parole
 // propone servizi, collaboratori (o tavoli), orari e consigli.
@@ -50,7 +50,7 @@ function clean(raw: Record<string, unknown>, tables: boolean): Proposal {
 }
 
 export async function proposeSetup(description: string): Promise<ProposalResult> {
-  const { salon } = await requireOwner();
+  const { supabase, salon } = await requireOwner();
   const type = businessType(salon.business_type);
   const tables = type.tables === true;
 
@@ -74,6 +74,7 @@ export async function proposeSetup(description: string): Promise<ProposalResult>
 
   description = description.trim().slice(0, 1500);
   if (description.length < 10) return { ok: false, error: "Descrivi la tua attività in qualche riga." };
+  if (!(await takeAiRequest(supabase, salon.id))) return { ok: false, error: AI_LIMIT_MESSAGE };
 
   const system = [
     `Aiuti a configurare un gestionale di prenotazioni per un'attività italiana di tipo "${type.label}" chiamata "${salon.name}".`,

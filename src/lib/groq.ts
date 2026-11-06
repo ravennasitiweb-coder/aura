@@ -5,6 +5,17 @@ import "server-only";
 
 export const groqEnabled = () => Boolean(process.env.GROQ_API_KEY);
 
+export const AI_DAILY_LIMIT = 10;
+export const AI_LIMIT_MESSAGE = `Hai usato le ${AI_DAILY_LIMIT} richieste all'assistente di oggi. Riprova domani.`;
+
+type Db = { rpc: (fn: "use_ai_request", args: { p_salon_id: string }) => PromiseLike<{ data: unknown; error: unknown }> };
+
+/** Conta una richiesta dell'attività: false oltre il limite giornaliero */
+export async function takeAiRequest(supabase: unknown, salonId: string) {
+  const { data, error } = await (supabase as Db).rpc("use_ai_request", { p_salon_id: salonId });
+  return !error && data === true;
+}
+
 const MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
 
 export async function groqJson(system: string, user: string): Promise<unknown> {

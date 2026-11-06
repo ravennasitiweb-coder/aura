@@ -6,6 +6,9 @@ import { emailEnabled, sendBookingConfirmation } from "@/lib/email";
 import { PUBLIC_ERRORS } from "@/lib/public-errors";
 import { getPublicFreeSlots } from "@/lib/public-booking";
 import { createClient } from "@/lib/supabase/server";
+import { humanCheck } from "@/lib/turnstile";
+
+const BOT_ERROR = "Conferma di non essere un robot (il riquadro sopra al pulsante) e riprova.";
 
 export type BookingResult =
   | {
@@ -25,6 +28,7 @@ export async function loadSlots(slug: string, serviceId: string, date: string, s
 export async function book(slug: string, formData: FormData): Promise<BookingResult> {
   // Campo trappola: invisibile alle persone, i bot spesso lo compilano
   if (str(formData, "website")) return { ok: false, error: "Richiesta non valida." };
+  if (!(await humanCheck(formData))) return { ok: false, error: BOT_ERROR };
 
   // Ristoranti: si indica il numero di persone e il tavolo lo sceglie il database
   const party = Number(str(formData, "party"));
@@ -75,6 +79,7 @@ export async function book(slug: string, formData: FormData): Promise<BookingRes
 
 export async function joinWaitlist(slug: string, formData: FormData): Promise<SimpleResult> {
   if (str(formData, "website")) return { ok: false, error: "Richiesta non valida." };
+  if (!(await humanCheck(formData))) return { ok: false, error: BOT_ERROR };
   const supabase = await createClient();
   const { error } = await supabase.rpc("public_join_waitlist", {
     p_slug: slug,

@@ -7,6 +7,7 @@ import { formatDuration, formatPrice } from "@/lib/format";
 import { businessType } from "@/lib/business-types";
 import type { PublicSalonInfo } from "@/lib/public-booking";
 import { book, loadSlots, type BookingResult } from "./actions";
+import { Turnstile, resetTurnstile } from "@/components/Turnstile";
 import { WaitlistForm } from "./WaitlistForm";
 
 type Booking = Extract<BookingResult, { ok: true }>["booking"];
@@ -73,6 +74,7 @@ export function BookingFlow({ slug, info, today }: { slug: string; info: PublicS
     setError(null);
     startSubmitting(async () => {
       const result = await book(slug, formData);
+      if (!result.ok) resetTurnstile();
       if (result.ok) {
         setBooking(result.booking);
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -277,6 +279,8 @@ export function BookingFlow({ slug, info, today }: { slug: string; info: PublicS
                 per il prossimo appuntamento. Puoi disiscriverti quando vuoi.
               </span>
             </label>
+
+            <Turnstile />
 
             {error && (
               <p role="alert" className="rounded-xl border border-cherry/30 bg-cherry/5 px-4 py-3 text-sm text-cherry">
