@@ -1,5 +1,6 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { DEFAULT_BUSINESS_TYPE, businessType, isBusinessType } from "@/lib/business-types";
@@ -39,6 +40,7 @@ export async function createSalon(_prev: OnboardingState, formData: FormData): P
   // Servizi di esempio del settore, se richiesti: si modificano poi in Servizi.
   // Se l'inserimento non riesce l'attività esiste comunque: si aggiungono a mano.
   const salonId = (salon as { id: string }).id;
+  (await cookies()).set("sb_salon", salonId, { httpOnly: true, sameSite: "lax", secure: true, path: "/", maxAge: 60 * 60 * 24 * 365 });
   if (withServices) {
     await supabase.from("services").insert(
       businessType(rawType).services.map((s) => ({

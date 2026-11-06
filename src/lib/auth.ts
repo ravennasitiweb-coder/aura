@@ -1,4 +1,5 @@
 import "server-only";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
@@ -29,20 +30,24 @@ export const requireUser = cache(async () => {
   return { supabase, user: data.user };
 });
 
-// Il salone dell'utente (per ora uno solo per utente).
-// Se non ne ha ancora uno, lo manda a crearlo.
+/** Cookie con l'attività scelta, per chi ne gestisce più di una */
+export const SALON_COOKIE = "sb_salon";
+
+// L'attività su cui si sta lavorando: quella scelta nel cookie, se l'utente
+// ne è davvero membro, altrimenti la prima. Se non ne ha, la fa creare.
 export const getCurrentSalon = cache(async () => {
   const { supabase, user } = await requireUser();
   const { data, error } = await supabase
     .from("salon_members")
     .select("role, salon:salons (id, name, slug, city, business_type, cancel_hours, reminders_enabled, daily_summary, recall_days, google_review_url)")
     .eq("user_id", user.id)
-    .order("created_at")
-    .limit(1)
-    .maybeSingle();
+    .order("created_at");
   if (error) throw new Error(`Impossibile leggere il salone: ${error.message}`);
-  if (!data) redirect("/app/onboarding");
-  return { supabase, user, role: data.role as Role, salon: data.salon as unknown as Salon };
+  if (!data || data.length === 0) redirect("/app/onboarding");
+  const chosen = (await cookies()).get(SALON_COOKIE)?.value;
+  const row = data.find((m) => (m.salon as unknown as Salon).id === chosen) ?? data[0];
+  const salons = data.map((m) => m.salon as unknown as Salon);
+  return { supabase, user, role: row.role as Role, salon: row.salon as unknown as Salon, salons };
 });
 
 // Per le azioni che modificano i dati: solo il titolare.

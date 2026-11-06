@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { Logo } from "@/components/Logo";
 import { AppNav } from "@/components/app/AppNav";
 import { signOut } from "@/app/(auth)/actions";
+import { switchSalon } from "@/app/app/switch-actions";
 import { getCurrentSalon } from "@/lib/auth";
 import { businessType } from "@/lib/business-types";
 
@@ -44,11 +45,29 @@ async function SalonNav() {
 }
 
 async function SalonBadge() {
-  const { salon, user } = await getCurrentSalon();
+  const { salon, salons, user } = await getCurrentSalon();
   return (
     <div className="rounded-xl bg-paper px-3 py-2">
-      <p className="truncate text-sm font-semibold">{salon.name}</p>
+      {salons.length > 1 ? (
+        <form action={switchSalon}>
+          <label className="sr-only" htmlFor="salon_id">Attività</label>
+          <select
+            id="salon_id"
+            name="salon_id"
+            defaultValue={salon.id}
+            className="w-full truncate bg-transparent text-sm font-semibold outline-none"
+          >
+            {salons.map((s) => (
+              <option key={s.id} value={s.id}>{s.name}</option>
+            ))}
+          </select>
+          <button type="submit" className="text-xs text-bottle underline">Passa a questa attività</button>
+        </form>
+      ) : (
+        <p className="truncate text-sm font-semibold">{salon.name}</p>
+      )}
       <p className="truncate text-xs text-ink-soft">{user.email}</p>
+      <Link href="/app/onboarding" className="text-xs text-ink-soft underline">+ Nuova attività</Link>
     </div>
   );
 }
