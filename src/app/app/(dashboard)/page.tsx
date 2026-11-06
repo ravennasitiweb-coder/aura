@@ -57,6 +57,9 @@ async function Overview() {
       <section aria-labelledby="setup-title" className="rounded-2xl border border-line bg-white p-6">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 id="setup-title" className="font-display text-xl font-bold">Completa la configurazione</h2>
+          {completed < steps.length && role === "owner" && (
+            <Link href="/app/assistente" className="text-sm font-semibold text-bottle underline">Fai prima: descrivila all&apos;assistente</Link>
+          )}
           <p className="text-sm text-ink-soft">{completed} di {steps.length} completati</p>
         </div>
         <div className="mt-3 h-2 overflow-hidden rounded-full bg-paper" aria-hidden="true">
