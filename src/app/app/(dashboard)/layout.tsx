@@ -36,7 +36,9 @@ export default function AppLayout({ children }: LayoutProps<"/app">) {
         </div>
       </aside>
       <main className="w-full max-w-5xl flex-1 px-4 pb-24 pt-8 sm:px-8">{children}</main>
-      <FeedbackButton />
+      <Suspense fallback={null}>
+        <FeedbackButton />
+      </Suspense>
     </div>
   );
 }
