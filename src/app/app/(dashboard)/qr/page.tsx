@@ -1,3 +1,4 @@
+import { ShareWhatsApp } from "@/components/app/ShareWhatsApp";
 import type { Metadata } from "next";
 import QRCode from "qrcode";
 import { Suspense } from "react";
@@ -29,7 +30,7 @@ async function Qr() {
           Stampalo e mettilo in vetrina, sul bancone o sui biglietti da visita: inquadrandolo con il telefono, i clienti aprono la
           tua pagina di prenotazione.
         </p>
-        <div className="mt-4"><PrintButton /></div>
+        <div className="mt-4 flex flex-wrap gap-2"><PrintButton /><ShareWhatsApp path={`/p/${salon.slug}`} name={salon.name} /></div>
       </div>
 
       {/* Il cartello da stampare */}

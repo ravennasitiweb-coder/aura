@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { CopyLink } from "@/components/app/CopyLink";
+import { ShareWhatsApp } from "@/components/app/ShareWhatsApp";
 import { GapsCard } from "@/components/app/GapsCard";
 import { getTomorrowGaps } from "@/lib/gaps";
 import { getCurrentSalon } from "@/lib/auth";
@@ -99,6 +100,14 @@ async function Overview() {
         </Link>
       )}
 
+      <Link href="/app/aggiungi" className="flex items-center justify-between gap-4 rounded-2xl border-2 border-dashed border-bottle/40 bg-white p-5 hover:border-bottle">
+        <span>
+          <span className="block font-semibold">Hai un&apos;agenda di carta o messaggi WhatsApp?</span>
+          <span className="text-sm text-ink-soft">Fai una foto o incolla il messaggio: l&apos;AI crea gli appuntamenti.</span>
+        </span>
+        <span className="shrink-0 rounded-full bg-bottle px-4 py-2 text-sm font-semibold text-white">Aggiungi veloce</span>
+      </Link>
+
       <section className="rounded-2xl bg-mint p-6">
         <h2 className="font-semibold text-bottle-dark">La tua pagina di prenotazione</h2>
         <p className="mt-1 font-mono text-bottle">/p/{salon.slug}</p>
@@ -112,6 +121,7 @@ async function Overview() {
             Apri la tua pagina
           </Link>
           <CopyLink path={`/p/${salon.slug}`} />
+          <ShareWhatsApp path={`/p/${salon.slug}`} name={salon.name} />
         </div>
       </section>
     </div>

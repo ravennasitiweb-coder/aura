@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { Logo } from "@/components/Logo";
 import { AppNav } from "@/components/app/AppNav";
+import { FeedbackButton } from "@/components/app/FeedbackButton";
 import { signOut } from "@/app/(auth)/actions";
 import { switchSalon } from "@/app/app/switch-actions";
 import { getCurrentSalon } from "@/lib/auth";
@@ -34,7 +35,8 @@ export default function AppLayout({ children }: LayoutProps<"/app">) {
           </form>
         </div>
       </aside>
-      <main className="w-full max-w-5xl flex-1 px-4 py-8 sm:px-8">{children}</main>
+      <main className="w-full max-w-5xl flex-1 px-4 pb-24 pt-8 sm:px-8">{children}</main>
+      <FeedbackButton />
     </div>
   );
 }
