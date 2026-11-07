@@ -9,6 +9,7 @@ const LINKS = [
   { href: "/app/assistente", label: "Assistente" },
   { href: "/app/agenda", label: "Agenda" },
   { href: "/app/aggiungi", label: "Aggiungi veloce" },
+  { href: "/app/riempi", label: "Riempi i buchi" },
   { href: "/app/clienti", label: "Clienti" },
   { href: "/app/statistiche", label: "Statistiche" },
   { href: "/app/servizi", label: "Servizi" },

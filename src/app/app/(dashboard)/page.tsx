@@ -5,6 +5,7 @@ import { CopyLink } from "@/components/app/CopyLink";
 import { ShareWhatsApp } from "@/components/app/ShareWhatsApp";
 import { GapsCard } from "@/components/app/GapsCard";
 import { getTomorrowGaps } from "@/lib/gaps";
+import { nowInTimezone } from "@/lib/agenda";
 import { getCurrentSalon } from "@/lib/auth";
 import { businessType } from "@/lib/business-types";
 
@@ -48,6 +49,10 @@ async function Overview() {
         <p className="text-sm text-ink-soft">Benvenuto in</p>
         <h1 className="font-display text-3xl font-bold tracking-tight">{salon.name}</h1>
       </div>
+
+      <Suspense fallback={null}>
+        <Earnings />
+      </Suspense>
 
       {completed === steps.length && role === "owner" && (
         <Suspense fallback={null}>
@@ -131,4 +136,32 @@ async function Overview() {
 async function Gaps() {
   const { times, reachable } = await getTomorrowGaps();
   return <GapsCard times={times} reachable={reachable.length} />;
+}
+
+/** Contatore: quanto hanno portato questo mese le prenotazioni fatte online dai clienti */
+async function Earnings() {
+  const { supabase, salon } = await getCurrentSalon();
+  const monthStart = `${nowInTimezone("Europe/Rome").date.slice(0, 8)}01T00:00:00+01:00`;
+  const [appts, services] = await Promise.all([
+    supabase.from("appointments").select("service_id").eq("salon_id", salon.id).eq("source", "online").in("status", ["confirmed", "completed"]).gte("starts_at", monthStart),
+    supabase.from("services").select("id, price_cents").eq("salon_id", salon.id),
+  ]);
+  const price = new Map((services.data ?? []).map((s) => [s.id, s.price_cents]));
+  const rows = appts.data ?? [];
+  const euros = Math.round(rows.reduce((sum, a) => sum + (price.get(a.service_id) ?? 0), 0) / 100);
+
+  return (
+    <section className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-bottle-dark p-6 text-white">
+      <div>
+        <p className="text-sm text-white/70">Questo mese SmartBooking ti ha portato</p>
+        <p className="font-display text-5xl font-extrabold tracking-tight">
+          {rows.length} <span className="text-2xl font-bold">prenotazioni online</span>
+        </p>
+      </div>
+      {euros > 0 && <p className="font-display text-5xl font-extrabold text-mint-deep">{euros.toLocaleString("it-IT")} €</p>}
+      {rows.length === 0 && (
+        <Link href="/app/riempi" className="rounded-full bg-mint px-5 py-2.5 font-semibold text-bottle-dark hover:bg-white">Riempi i buchi</Link>
+      )}
+    </section>
+  );
 }

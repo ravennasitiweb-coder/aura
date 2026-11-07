@@ -17,7 +17,7 @@ const FEATURES = [
   { title: "Promemoria automatici", text: "Meno clienti che non si presentano." },
   { title: "Foto, vocale o WhatsApp", text: "Incolla un messaggio o detta: l'appuntamento si crea da solo." },
   { title: "Tavoli e sala", text: "Per ristoranti: posti, turni e pianta." },
-  { title: "Lista d'attesa", text: "Se si libera un posto, lo riempi." },
+  { title: "Riempi i buchi", text: "Storia Instagram dei posti liberi e WhatsApp ai clienti persi." },
   { title: "Dati in Europa", text: "Server in UE, GDPR rispettato." },
   { title: "Segretaria WhatsApp", text: "Risponde ai tuoi clienti su WhatsApp, giorno e notte, con gli orari liberi veri.", soon: true },
 ];
@@ -27,6 +27,7 @@ const FAQ = [
   { q: "Posso prendere ancora appuntamenti al telefono?", a: "Sì, li aggiungi in agenda in pochi secondi." },
   { q: "Come funziona il mese gratis?", a: "Provi tutto per 30 giorni. Puoi disdire quando vuoi, senza vincoli." },
   { q: "Ci sono commissioni sulle prenotazioni?", a: "No. Paghi solo l'abbonamento mensile." },
+  { q: "Come funziona la garanzia?", a: "Se in un mese le prenotazioni online non valgono almeno quanto l'abbonamento, il mese dopo è gratis. Lo vedi nel contatore in Panoramica." },
 ];
 
 const CTA = "Inizia gratis";
@@ -135,7 +136,7 @@ export default function Home() {
         <section id="prezzi" className="scroll-mt-8 bg-bottle-dark text-white">
           <div className="mx-auto w-full max-w-4xl px-4 py-24 sm:px-6">
             <h2 className="text-center font-display text-4xl font-extrabold tracking-tight sm:text-5xl">Due piani, senza commissioni.</h2>
-            <p className="mt-3 text-center text-white/70">Primo mese gratis · IVA esclusa · disdici quando vuoi</p>
+            <p className="mt-3 text-center text-white/70">Primo mese gratis · Se non ti ripaghi, il mese dopo è gratis · IVA esclusa</p>
             <div className="mt-12 grid gap-6 md:grid-cols-2">
               {PLANS.map((p) => (
                 <div key={p.id} className={`flex flex-col rounded-3xl p-8 ${p.highlight ? "bg-mint text-bottle-dark" : "bg-white/5 ring-1 ring-white/15"}`}>
@@ -186,7 +187,7 @@ export default function Home() {
         <section className="bg-mint">
           <div className="mx-auto flex w-full max-w-6xl flex-col items-start gap-8 px-4 py-20 sm:px-6 md:flex-row md:items-center md:justify-between">
             <h2 className="max-w-xl font-display text-4xl font-extrabold tracking-tight text-bottle-dark sm:text-5xl">
-              Il primo mese è gratis.
+              Se non ti fa guadagnare, non paghi.
             </h2>
             <Link href="/registrati" className="rounded-full bg-bottle-dark px-8 py-4 text-lg font-bold text-white hover:bg-ink">
               {CTA}

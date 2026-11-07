@@ -9,9 +9,8 @@ import { audienceFor, recentlyMessaged } from "@/lib/marketing";
 export const GAPS_KIND = "gaps";
 export const GAPS_COOLDOWN_DAYS = 7;
 
-export async function getTomorrowGaps() {
-  const { supabase, salon } = await getCurrentSalon();
-  const date = addDays(nowInTimezone("Europe/Rome").date, 1);
+/** Orari liberi di un giorno (uno per ora al massimo), per il servizio più breve */
+export async function freeTimesOn(date: string) {
   const day = await getAgendaDay(date);
 
   // Orari liberi per il servizio più breve: se c'è posto per quello, c'è un buco
@@ -31,8 +30,19 @@ export async function getTomorrowGaps() {
     // Un orario ogni ora al massimo, per non elencare 9:00, 9:15, 9:30...
     const hourly = new Map<number, number>();
     for (const s of slots) if (!hourly.has(Math.floor(s.start / 60))) hourly.set(Math.floor(s.start / 60), s.start);
-    times = [...hourly.values()].sort((a, b) => a - b).map(minutesToTime);
+    const now = nowInTimezone("Europe/Rome");
+    times = [...hourly.values()]
+      .filter((m) => date !== now.date || m > now.minutes + 30)
+      .sort((a, b) => a - b)
+      .map(minutesToTime);
   }
+  return times;
+}
+
+export async function getTomorrowGaps() {
+  const { supabase, salon } = await getCurrentSalon();
+  const date = addDays(nowInTimezone("Europe/Rome").date, 1);
+  const times = await freeTimesOn(date);
 
   const audience = await audienceFor(supabase, salon.id);
   const recent = await recentlyMessaged(supabase, salon.id, GAPS_KIND, GAPS_COOLDOWN_DAYS);
