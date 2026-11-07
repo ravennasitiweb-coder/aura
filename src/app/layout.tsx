@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   // Icona per "Aggiungi alla schermata Home" su iPhone
   icons: { apple: "/icone/180" },
   appleWebApp: { capable: true, title: "SmartBooking", statusBarStyle: "default" },
-  title: "SmartBooking — Prenotazioni online per saloni",
+  title: "SmartBooking — Prenotazioni online, primo mese gratis",
   description:
     "Agenda online e pagina di prenotazione per saloni, barbieri, estetisti, tatuatori, trainer e altre attività su appuntamento: i clienti prenotano da soli, 24 ore su 24.",
 };

@@ -10,7 +10,6 @@ export { verifyStripeSignature } from "@/lib/stripe-signature";
 const PRICE_ENV: Record<PlanId, string> = {
   solo: "STRIPE_PRICE_SOLO",
   salone: "STRIPE_PRICE_SALONE",
-  studio: "STRIPE_PRICE_STUDIO",
 };
 
 export function priceIdFor(plan: PlanId) {

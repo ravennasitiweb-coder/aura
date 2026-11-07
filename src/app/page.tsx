@@ -1,108 +1,112 @@
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { HeroDemo } from "@/components/landing/HeroDemo";
-import { BUSINESS_TYPES, typesByCategory } from "@/lib/business-types";
+import { BUSINESS_TYPES } from "@/lib/business-types";
 import { PLANS } from "@/lib/plans";
 
+const PAINS = ["Il telefono squilla mentre lavori.", "WhatsApp alle 23.", "Il cliente che non si presenta."];
+
 const STEPS = [
-  { title: "Imposta il salone", text: "Inserisci servizi, durate, prezzi, collaboratori e orari. Bastano un quarto d'ora e il telefono." },
-  { title: "Condividi il tuo link", text: "Mettilo nella bio di Instagram, su Google Maps e nel messaggio automatico di WhatsApp." },
-  { title: "Ritrova tutto in agenda", text: "I clienti prenotano da soli dalla tua pagina. Gli appuntamenti compaiono già al posto giusto, con nome e telefono." },
+  { title: "Descrivi la tua attività", text: "L'assistente prepara servizi, orari e collaboratori." },
+  { title: "Condividi il link", text: "Su Instagram, Google Maps e WhatsApp." },
+  { title: "Ricevi prenotazioni", text: "Arrivano in agenda da sole, giorno e notte." },
 ];
 
-// Solo funzioni che il prodotto ha davvero oggi
 const FEATURES = [
-  { title: "Un'agenda per ogni collaboratore", text: "Vedi la giornata di tutti a colpo d'occhio: chi è occupato, chi è libero, quando il salone è chiuso." },
-  { title: "I clienti prenotano da soli, a qualsiasi ora", text: "Dalla tua pagina scelgono servizio, giorno e orario tra quelli davvero liberi, anche di notte e di domenica." },
-  { title: "Mai due clienti sulla stessa poltrona", text: "Il sistema blocca un orario appena viene preso, anche se due persone prenotano nello stesso istante." },
-  { title: "Orari, pause e servizi come li vuoi tu", text: "Pausa pranzo, giorni di chiusura, chi fa cosa: le prenotazioni rispettano le tue regole." },
-  { title: "Dati in Europa, nel rispetto del GDPR", text: "Server in UE, consenso del cliente registrato a ogni prenotazione, e i dati restano tuoi." },
+  { title: "Prenotazioni h24", text: "Solo negli orari davvero liberi." },
+  { title: "Promemoria automatici", text: "Meno clienti che non si presentano." },
+  { title: "Assistente AI", text: "Configura tutto da una tua descrizione." },
+  { title: "Tavoli e sala", text: "Per ristoranti: posti, turni e pianta." },
+  { title: "Lista d'attesa", text: "Se si libera un posto, lo riempi." },
+  { title: "Dati in Europa", text: "Server in UE, GDPR rispettato." },
 ];
 
 const FAQ = [
-  { q: "Devo installare qualcosa?", a: "No. SmartBooking funziona dal browser di computer, tablet e telefono." },
-  { q: "Come prenotano i miei clienti?", a: "Dalla pagina del tuo salone, che condividi su Instagram, Google e WhatsApp: scelgono servizio, giorno e orario tra quelli liberi e lasciano nome e telefono." },
-  { q: "Posso continuare a prendere appuntamenti al telefono?", a: "Sì. Li inserisci in agenda in pochi secondi e il sistema li considera come tutti gli altri." },
-  { q: "C'è un assistente AI?", a: "È in arrivo: risponderà ai clienti in chat usando gli stessi orari liberi della tua agenda. Lo attiveremo solo con un fornitore che tratta i dati in Europa." },
-  { q: "Che fine fanno i dati dei miei clienti?", a: "Sono conservati su server nell'Unione Europea (Francoforte), non vengono venduti né usati per pubblicità." },
+  { q: "Devo installare qualcosa?", a: "No, funziona dal browser di telefono e computer." },
+  { q: "Posso prendere ancora appuntamenti al telefono?", a: "Sì, li aggiungi in agenda in pochi secondi." },
+  { q: "Come funziona il mese gratis?", a: "Provi tutto per 30 giorni. Puoi disdire quando vuoi, senza vincoli." },
+  { q: "Ci sono commissioni sulle prenotazioni?", a: "No. Paghi solo l'abbonamento mensile." },
 ];
+
+const CTA = "Inizia gratis";
 
 export default function Home() {
   return (
     <>
-      <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-5 sm:px-6">
-        <Logo />
-        <nav aria-label="Principale" className="flex items-center gap-6 text-sm">
-          <a href="#come-funziona" className="hidden text-ink-soft hover:text-ink md:inline">Come funziona</a>
-          <a href="#prezzi" className="hidden text-ink-soft hover:text-ink md:inline">Prezzi</a>
-          <Link href="/accedi" className="text-ink-soft hover:text-ink">Accedi</Link>
-          <Link href="/registrati" className="rounded-full bg-ink px-4 py-2 font-medium text-white hover:bg-bottle-dark">
-            Crea il tuo salone
-          </Link>
-        </nav>
-      </header>
+      {/* Hero scuro, ad alto contrasto */}
+      <div className="bg-bottle-dark text-white">
+        <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-5 sm:px-6">
+          <Logo className="text-white" />
+          <nav aria-label="Principale" className="flex items-center gap-6 text-sm">
+            <a href="#prezzi" className="hidden text-white/70 hover:text-white md:inline">Prezzi</a>
+            <Link href="/accedi" className="text-white/70 hover:text-white">Accedi</Link>
+            <Link href="/registrati" className="rounded-full bg-mint px-4 py-2 font-semibold text-bottle-dark hover:bg-white">
+              {CTA}
+            </Link>
+          </nav>
+        </header>
 
-      <main>
-        {/* Hero */}
-        <section className="mx-auto grid w-full max-w-6xl items-center gap-12 px-4 pb-20 pt-10 sm:px-6 lg:grid-cols-[1fr_1.1fr] lg:pt-16">
+        <section className="mx-auto grid w-full max-w-6xl items-center gap-12 px-4 pb-24 pt-10 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:pt-16">
           <div>
-            <h1 className="font-display text-[2.5rem] font-bold leading-[1.04] tracking-[-0.03em] sm:text-5xl xl:text-[3.6rem]">
-              Il tuo salone prende appuntamenti anche quando hai le mani tra i capelli.
+            <p className="inline-block rounded-full bg-mint px-4 py-1.5 text-sm font-bold text-bottle-dark">Primo mese gratis</p>
+            <h1 className="mt-6 font-display text-[3rem] font-extrabold leading-[0.95] tracking-[-0.04em] sm:text-6xl xl:text-[5.2rem]">
+              Prenotano da soli.
+              <span className="block text-mint-deep">Tu lavori.</span>
             </h1>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-soft">
-              I clienti prenotano da soli dalla pagina del tuo salone, a qualsiasi ora, solo negli orari davvero liberi.
-              Tu ritrovi tutto in agenda. Per parrucchieri, barbieri, estetisti, tatuatori, trainer e non solo.
+            <p className="mt-6 max-w-md text-lg text-white/80">
+              Agenda online, prenotazioni h24 e promemoria. Per saloni, studi e ristoranti.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/registrati" className="rounded-full bg-bottle px-6 py-3 font-semibold text-white hover:bg-bottle-dark">
-                Crea il tuo salone
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <Link href="/registrati" className="rounded-full bg-mint px-8 py-4 text-lg font-bold text-bottle-dark hover:bg-white">
+                {CTA}
               </Link>
-              <Link href="/demo" className="rounded-full border border-ink/20 px-6 py-3 font-semibold hover:border-ink">
-                Prova la demo
+              <Link href="/demo" className="font-semibold text-white underline-offset-4 hover:underline">
+                Guarda la demo
               </Link>
             </div>
+            <p className="mt-4 text-sm text-white/60">Da 15 € al mese, tutto incluso. Nessuna commissione.</p>
           </div>
-          <HeroDemo />
+          <div className="text-ink">
+            <HeroDemo />
+          </div>
+        </section>
+      </div>
+
+      <main>
+        {/* Problema: tre frasi secche */}
+        <section className="border-b border-line bg-white">
+          <ul className="mx-auto grid max-w-6xl gap-6 px-4 py-14 sm:px-6 md:grid-cols-3">
+            {PAINS.map((p) => (
+              <li key={p} className="font-display text-2xl font-bold leading-tight text-ink/40 line-through decoration-cherry decoration-[3px] sm:text-3xl">
+                {p}
+              </li>
+            ))}
+          </ul>
         </section>
 
-        {/* Problema */}
-        <section className="border-y border-line bg-white">
-          <p className="mx-auto max-w-4xl px-4 py-14 text-center font-display text-2xl leading-snug sm:text-3xl">
-            Il telefono che squilla durante una piega. I messaggi su WhatsApp alle undici di sera.
-            Due clienti sullo stesso orario. Da oggi ci pensa SmartBooking.
-          </p>
-        </section>
-
-        {/* Come funziona: è una sequenza, quindi i passi sono numerati */}
-        <section id="come-funziona" className="mx-auto w-full max-w-6xl scroll-mt-8 px-4 py-20 sm:px-6">
-          <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">Pronto in tre passi</h2>
-          <ol className="mt-10 grid gap-10 md:grid-cols-3">
+        {/* Come funziona: sequenza vera, quindi numerata */}
+        <section className="mx-auto w-full max-w-6xl px-4 py-24 sm:px-6">
+          <h2 className="font-display text-4xl font-extrabold tracking-tight sm:text-5xl">Pronto in 15 minuti</h2>
+          <ol className="mt-12 grid gap-10 md:grid-cols-3">
             {STEPS.map((s, i) => (
-              <li key={s.title} className="border-t-2 border-bottle pt-5">
-                <span className="font-display text-5xl font-bold text-mint-deep">{i + 1}</span>
-                <h3 className="mt-3 text-lg font-semibold">{s.title}</h3>
-                <p className="mt-2 leading-relaxed text-ink-soft">{s.text}</p>
+              <li key={s.title}>
+                <span className="font-display text-7xl font-extrabold leading-none text-mint-deep">{i + 1}</span>
+                <h3 className="mt-4 text-xl font-bold">{s.title}</h3>
+                <p className="mt-1 text-ink-soft">{s.text}</p>
               </li>
             ))}
           </ol>
         </section>
 
-        {/* Funzionalità */}
+        {/* Funzioni */}
         <section className="bg-mint">
-          <div className="mx-auto grid w-full max-w-6xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[0.8fr_1.2fr]">
-            <div>
-              <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
-                Pensato per chi lavora in piedi tutto il giorno
-              </h2>
-              <p className="mt-4 max-w-md leading-relaxed text-bottle-dark">
-                Niente software complicati: le cose che ti servono davvero, dove ti aspetti di trovarle.
-              </p>
-            </div>
-            <dl className="divide-y divide-bottle/15">
+          <div className="mx-auto w-full max-w-6xl px-4 py-24 sm:px-6">
+            <h2 className="font-display text-4xl font-extrabold tracking-tight sm:text-5xl">Tutto incluso. Davvero.</h2>
+            <dl className="mt-12 grid gap-px overflow-hidden rounded-3xl bg-bottle/15 sm:grid-cols-2 lg:grid-cols-3">
               {FEATURES.map((f) => (
-                <div key={f.title} className="py-5 first:pt-0">
-                  <dt className="font-semibold">{f.title}</dt>
-                  <dd className="mt-1 leading-relaxed text-ink-soft">{f.text}</dd>
+                <div key={f.title} className="bg-mint p-7">
+                  <dt className="font-display text-2xl font-bold text-bottle-dark">{f.title}</dt>
+                  <dd className="mt-1 text-ink-soft">{f.text}</dd>
                 </div>
               ))}
             </dl>
@@ -110,66 +114,50 @@ export default function Home() {
         </section>
 
         {/* Per chi */}
-        <section className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
-          <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">Su misura per il tuo mestiere</h2>
-          <div className="mt-10 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
-            {BUSINESS_TYPES.filter((t) => t.featured).map((t) => (
-              <div key={t.id}>
-                <h3 className="font-display text-xl font-bold text-bottle">{t.label}</h3>
-                <p className="mt-2 leading-relaxed text-ink-soft">{t.featured!.pitch}</p>
-              </div>
+        <section className="mx-auto w-full max-w-6xl px-4 py-24 sm:px-6">
+          <h2 className="font-display text-4xl font-extrabold tracking-tight sm:text-5xl">
+            {BUSINESS_TYPES.length} tipi di attività
+          </h2>
+          <ul className="mt-10 flex flex-wrap gap-2">
+            {BUSINESS_TYPES.map((t) => (
+              <li
+                key={t.id}
+                className={`rounded-full px-4 py-2 text-sm font-medium ${t.featured || t.tables ? "bg-bottle text-white" : "border border-line bg-white text-ink-soft"}`}
+              >
+                {t.label}
+              </li>
             ))}
-          </div>
-
-          {/* Tutte le altre attività, per categoria */}
-          <div className="mt-14 border-t border-line pt-10">
-            <h3 className="font-display text-xl font-bold">E molte altre attività su appuntamento</h3>
-            <dl className="mt-6 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
-              {typesByCategory().map(({ category, types }) => {
-                const others = types.filter((t) => !t.featured);
-                if (others.length === 0) return null;
-                return (
-                  <div key={category}>
-                    <dt className="text-sm font-semibold text-bottle">{category}</dt>
-                    <dd className="mt-1 leading-relaxed text-ink-soft">{others.map((t) => t.label).join(", ")}</dd>
-                  </div>
-                );
-              })}
-            </dl>
-          </div>
+          </ul>
         </section>
 
         {/* Prezzi */}
-        <section id="prezzi" className="scroll-mt-8 border-t border-line bg-white">
-          <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
-            <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">Prezzi semplici, senza vincoli</h2>
-            <p className="mt-3 text-ink-soft">Prezzi mensili previsti, IVA esclusa. Durante il periodo di lancio puoi usarlo gratis.</p>
-            <div className="mt-10 grid gap-6 md:grid-cols-3">
+        <section id="prezzi" className="scroll-mt-8 bg-bottle-dark text-white">
+          <div className="mx-auto w-full max-w-4xl px-4 py-24 sm:px-6">
+            <h2 className="text-center font-display text-4xl font-extrabold tracking-tight sm:text-5xl">Due prezzi. Tutto incluso.</h2>
+            <p className="mt-3 text-center text-white/70">Primo mese gratis · IVA esclusa · disdici quando vuoi</p>
+            <div className="mt-12 grid gap-6 md:grid-cols-2">
               {PLANS.map((p) => (
-                <div
-                  key={p.name}
-                  className={`flex flex-col rounded-3xl p-7 ${p.highlight ? "bg-bottle text-white" : "border border-line"}`}
-                >
-                  <h3 className="font-display text-xl font-bold">{p.name}</h3>
-                  <p className={p.highlight ? "text-mint" : "text-ink-soft"}>{p.text}</p>
-                  <p className="mt-6 font-display text-5xl font-bold">
-                    {p.price} €<span className="text-base font-normal"> / mese</span>
+                <div key={p.id} className={`flex flex-col rounded-3xl p-8 ${p.highlight ? "bg-mint text-bottle-dark" : "bg-white/5 ring-1 ring-white/15"}`}>
+                  <h3 className="font-display text-2xl font-bold">{p.name}</h3>
+                  <p className={p.highlight ? "text-bottle" : "text-white/70"}>{p.text}</p>
+                  <p className="mt-6 font-display text-7xl font-extrabold leading-none tracking-tight">
+                    {p.price}€<span className="text-lg font-medium"> /mese</span>
                   </p>
-                  <ul className="mt-6 flex-1 space-y-2">
+                  <ul className="mt-8 flex-1 space-y-2">
                     {p.items.map((it) => (
                       <li key={it} className="flex gap-2">
-                        <span aria-hidden="true" className={p.highlight ? "text-mint" : "text-bottle"}>✓</span>
+                        <span aria-hidden="true" className="font-bold">✓</span>
                         {it}
                       </li>
                     ))}
                   </ul>
                   <Link
                     href="/registrati"
-                    className={`mt-8 rounded-full px-5 py-3 text-center font-semibold ${
-                      p.highlight ? "bg-white text-bottle hover:bg-mint" : "bg-ink text-white hover:bg-bottle-dark"
+                    className={`mt-8 rounded-full px-5 py-4 text-center text-lg font-bold ${
+                      p.highlight ? "bg-bottle-dark text-white hover:bg-ink" : "bg-white text-bottle-dark hover:bg-mint"
                     }`}
                   >
-                    Crea il tuo salone
+                    Prova gratis 30 giorni
                   </Link>
                 </div>
               ))}
@@ -178,35 +166,30 @@ export default function Home() {
         </section>
 
         {/* FAQ */}
-        <section className="mx-auto w-full max-w-3xl px-4 py-20 sm:px-6">
-          <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">Domande frequenti</h2>
+        <section className="mx-auto w-full max-w-3xl px-4 py-24 sm:px-6">
+          <h2 className="font-display text-4xl font-extrabold tracking-tight">Domande</h2>
           <div className="mt-8 divide-y divide-line border-y border-line">
             {FAQ.map((f) => (
-              <details key={f.q} className="group py-4">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold">
+              <details key={f.q} className="group py-5">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-semibold">
                   {f.q}
-                  <span aria-hidden="true" className="text-xl text-bottle transition-transform group-open:rotate-45">+</span>
+                  <span aria-hidden="true" className="text-2xl text-bottle transition-transform group-open:rotate-45">+</span>
                 </summary>
-                <p className="mt-2 leading-relaxed text-ink-soft">{f.a}</p>
+                <p className="mt-2 text-ink-soft">{f.a}</p>
               </details>
             ))}
           </div>
         </section>
 
         {/* Chiamata finale */}
-        <section className="bg-bottle text-white">
-          <div className="mx-auto flex w-full max-w-6xl flex-col items-start gap-6 px-4 py-16 sm:px-6 md:flex-row md:items-center md:justify-between">
-            <h2 className="max-w-xl font-display text-3xl font-bold tracking-tight">
-              Imposta il tuo salone in un quarto d&apos;ora e condividi il link già oggi.
+        <section className="bg-mint">
+          <div className="mx-auto flex w-full max-w-6xl flex-col items-start gap-8 px-4 py-20 sm:px-6 md:flex-row md:items-center md:justify-between">
+            <h2 className="max-w-xl font-display text-4xl font-extrabold tracking-tight text-bottle-dark sm:text-5xl">
+              Il primo mese è gratis.
             </h2>
-            <div className="flex flex-wrap gap-3">
-              <Link href="/registrati" className="rounded-full bg-white px-6 py-3 font-semibold text-bottle hover:bg-mint">
-                Crea il tuo salone
-              </Link>
-              <Link href="/demo" className="rounded-full border border-white/40 px-6 py-3 font-semibold text-white hover:border-white">
-                Prova la demo
-              </Link>
-            </div>
+            <Link href="/registrati" className="rounded-full bg-bottle-dark px-8 py-4 text-lg font-bold text-white hover:bg-ink">
+              {CTA}
+            </Link>
           </div>
         </section>
       </main>
@@ -215,7 +198,7 @@ export default function Home() {
         <Logo className="text-ink" />
         <div className="flex gap-6">
           <Link href="/privacy" className="hover:text-ink">Privacy</Link>
-          <span>© 2026 SmartBooking</span>
+          <span>© 2026 SmartBooking · Ravenna Siti Web</span>
         </div>
       </footer>
     </>

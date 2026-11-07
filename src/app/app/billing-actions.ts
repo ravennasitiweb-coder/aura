@@ -3,7 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { requireOwner } from "@/lib/auth";
-import type { PlanId } from "@/lib/plans";
+import { TRIAL_DAYS, type PlanId } from "@/lib/plans";
 import { priceIdFor, stripeEnabled, stripeRequest } from "@/lib/stripe";
 
 // Pagamento e gestione dell'abbonamento: si apre la pagina sicura di Stripe,
@@ -25,7 +25,8 @@ export async function startCheckout(plan: PlanId) {
     mode: "subscription",
     line_items: { 0: { price, quantity: 1 } },
     client_reference_id: salon.id,
-    subscription_data: { metadata: { salon_id: salon.id } },
+    // Primo mese gratis solo a chi non ha mai avuto un abbonamento
+    subscription_data: { metadata: { salon_id: salon.id }, trial_period_days: existing?.stripe_customer_id ? undefined : TRIAL_DAYS },
     customer: existing?.stripe_customer_id ?? undefined,
     customer_email: existing?.stripe_customer_id ? undefined : user.email,
     allow_promotion_codes: true,

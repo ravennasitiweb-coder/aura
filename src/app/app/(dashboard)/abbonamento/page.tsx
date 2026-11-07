@@ -84,7 +84,7 @@ async function Billing({ searchParams }: { searchParams: PageProps<"/app/abbonam
       )}
 
       {!active && (
-        <div className="grid gap-5 md:grid-cols-3">
+        <div className="grid gap-5 md:grid-cols-2">
           {PLANS.map((p) => {
             const available = enabled && Boolean(priceIdFor(p.id));
             return (

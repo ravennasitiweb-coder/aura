@@ -1,8 +1,12 @@
 // Piani di abbonamento: un unico elenco per landing e pagina Abbonamento.
-// Prezzi previsti, da confermare prima della vendita. Il prezzo vero che
-// viene addebitato è quello impostato su Stripe (variabili STRIPE_PRICE_*).
+// Il prezzo vero che viene addebitato è quello impostato su Stripe (variabili STRIPE_PRICE_*).
 
-export type PlanId = "solo" | "salone" | "studio";
+export type PlanId = "solo" | "salone";
+
+/** Giorni di prova gratuita al primo abbonamento */
+export const TRIAL_DAYS = 30;
+
+const ALL = ["Agenda online", "Pagina di prenotazione", "Promemoria ai clienti", "Lista d'attesa", "Assistente AI", "Tavoli e pianta della sala"];
 
 export const PLANS: {
   id: PlanId;
@@ -12,20 +16,6 @@ export const PLANS: {
   items: string[];
   highlight?: boolean;
 }[] = [
-  { id: "solo", name: "Solo", price: 19, text: "Per chi lavora da solo.", items: ["1 collaboratore", "Agenda online", "Pagina di prenotazione"] },
-  {
-    id: "salone",
-    name: "Salone",
-    price: 39,
-    text: "Il piano più scelto.",
-    items: ["Fino a 5 collaboratori", "Agenda online", "Pagina di prenotazione", "In arrivo: assistente AI in chat"],
-    highlight: true,
-  },
-  {
-    id: "studio",
-    name: "Studio",
-    price: 69,
-    text: "Per saloni grandi.",
-    items: ["Collaboratori illimitati", "Agenda online", "Pagina di prenotazione", "In arrivo: assistente AI in chat"],
-  },
+  { id: "solo", name: "Solo", price: 15, text: "Per chi lavora da solo.", items: ["1 persona", ...ALL] },
+  { id: "salone", name: "Team", price: 29, text: "Per chi lavora in squadra.", items: ["Collaboratori o tavoli illimitati", ...ALL], highlight: true },
 ];
