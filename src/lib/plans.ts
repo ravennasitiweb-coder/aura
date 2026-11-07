@@ -6,7 +6,8 @@ export type PlanId = "solo" | "salone";
 /** Giorni di prova gratuita al primo abbonamento */
 export const TRIAL_DAYS = 30;
 
-const ALL = ["Agenda online", "Pagina di prenotazione", "Promemoria ai clienti", "Lista d'attesa", "Assistente AI", "Tavoli e pianta della sala"];
+const BASE = ["Agenda online", "Pagina di prenotazione", "Promemoria ai clienti"];
+const ALL = [...BASE, "Lista d'attesa", "Assistente AI", "Tavoli e pianta della sala"];
 
 export const PLANS: {
   id: PlanId;
@@ -16,6 +17,6 @@ export const PLANS: {
   items: string[];
   highlight?: boolean;
 }[] = [
-  { id: "solo", name: "Solo", price: 15, text: "Per chi lavora da solo.", items: ["1 persona", ...ALL] },
+  { id: "solo", name: "Solo", price: 15, text: "Per chi lavora da solo.", items: ["1 persona", ...BASE] },
   { id: "salone", name: "Team", price: 29, text: "Per chi lavora in squadra.", items: ["Collaboratori o tavoli illimitati", ...ALL], highlight: true },
 ];

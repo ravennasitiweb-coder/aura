@@ -64,7 +64,7 @@ export default function Home() {
                 Guarda la demo
               </Link>
             </div>
-            <p className="mt-4 text-sm text-white/60">Da 15 € al mese, tutto incluso. Nessuna commissione.</p>
+            <p className="mt-4 text-sm text-white/60">Da 15 € al mese. Nessuna commissione.</p>
           </div>
           <div className="text-ink">
             <HeroDemo />
@@ -133,7 +133,7 @@ export default function Home() {
         {/* Prezzi */}
         <section id="prezzi" className="scroll-mt-8 bg-bottle-dark text-white">
           <div className="mx-auto w-full max-w-4xl px-4 py-24 sm:px-6">
-            <h2 className="text-center font-display text-4xl font-extrabold tracking-tight sm:text-5xl">Due prezzi. Tutto incluso.</h2>
+            <h2 className="text-center font-display text-4xl font-extrabold tracking-tight sm:text-5xl">Due piani, senza commissioni.</h2>
             <p className="mt-3 text-center text-white/70">Primo mese gratis · IVA esclusa · disdici quando vuoi</p>
             <div className="mt-12 grid gap-6 md:grid-cols-2">
               {PLANS.map((p) => (
