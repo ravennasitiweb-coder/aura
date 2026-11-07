@@ -7,7 +7,7 @@ import { PLANS } from "@/lib/plans";
 const PAINS = ["Il telefono squilla mentre lavori.", "WhatsApp alle 23.", "Il cliente che non si presenta."];
 
 const STEPS = [
-  { title: "Descrivi la tua attività", text: "L'assistente prepara servizi, orari e collaboratori." },
+  { title: "Fai una foto all'agenda", text: "L'AI la trasforma in appuntamenti." },
   { title: "Condividi il link", text: "Su Instagram, Google Maps e WhatsApp." },
   { title: "Ricevi prenotazioni", text: "Arrivano in agenda da sole, giorno e notte." },
 ];
@@ -15,10 +15,11 @@ const STEPS = [
 const FEATURES = [
   { title: "Prenotazioni h24", text: "Solo negli orari davvero liberi." },
   { title: "Promemoria automatici", text: "Meno clienti che non si presentano." },
-  { title: "Assistente AI", text: "Configura tutto da una tua descrizione." },
+  { title: "Foto, vocale o WhatsApp", text: "Incolla un messaggio o detta: l'appuntamento si crea da solo." },
   { title: "Tavoli e sala", text: "Per ristoranti: posti, turni e pianta." },
   { title: "Lista d'attesa", text: "Se si libera un posto, lo riempi." },
   { title: "Dati in Europa", text: "Server in UE, GDPR rispettato." },
+  { title: "Segretaria WhatsApp", text: "Risponde ai tuoi clienti su WhatsApp, giorno e notte, con gli orari liberi veri.", soon: true },
 ];
 
 const FAQ = [
@@ -54,7 +55,7 @@ export default function Home() {
               <span className="block text-mint-deep">Tu lavori.</span>
             </h1>
             <p className="mt-6 max-w-md text-lg text-white/80">
-              Agenda online, prenotazioni h24 e promemoria. Per saloni, studi e ristoranti.
+              Non cambiare abitudini: fai una foto alla tua agenda, al resto pensa SmartBooking.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-4">
               <Link href="/registrati" className="rounded-full bg-mint px-8 py-4 text-lg font-bold text-bottle-dark hover:bg-white">
@@ -101,12 +102,12 @@ export default function Home() {
         {/* Funzioni */}
         <section className="bg-mint">
           <div className="mx-auto w-full max-w-6xl px-4 py-24 sm:px-6">
-            <h2 className="font-display text-4xl font-extrabold tracking-tight sm:text-5xl">Tutto incluso. Davvero.</h2>
+            <h2 className="font-display text-4xl font-extrabold tracking-tight sm:text-5xl">Lavori come sempre. Lui fa il resto.</h2>
             <dl className="mt-12 grid gap-px overflow-hidden rounded-3xl bg-bottle/15 sm:grid-cols-2 lg:grid-cols-3">
               {FEATURES.map((f) => (
-                <div key={f.title} className="bg-mint p-7">
-                  <dt className="font-display text-2xl font-bold text-bottle-dark">{f.title}</dt>
-                  <dd className="mt-1 text-ink-soft">{f.text}</dd>
+                <div key={f.title} className={"soon" in f ? "flex flex-wrap items-center gap-x-6 gap-y-1 bg-bottle-dark p-7 text-white sm:col-span-2 lg:col-span-3" : "bg-mint p-7"}>
+                  <dt className={`font-display text-2xl font-bold ${"soon" in f ? "text-white" : "text-bottle-dark"}`}>{f.title}{"soon" in f && <span className="ml-3 rounded-full bg-mint px-3 py-1 align-middle text-xs font-bold text-bottle-dark">In arrivo</span>}</dt>
+                  <dd className={"soon" in f ? "text-white/75" : "mt-1 text-ink-soft"}>{f.text}</dd>
                 </div>
               ))}
             </dl>

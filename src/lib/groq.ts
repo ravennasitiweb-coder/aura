@@ -38,3 +38,44 @@ export async function groqJson(system: string, user: string): Promise<unknown> {
   const data = (await res.json()) as { choices?: { message?: { content?: string } }[] };
   return JSON.parse(data.choices?.[0]?.message?.content ?? "{}");
 }
+
+const VISION_MODEL = process.env.GROQ_VISION_MODEL || "meta-llama/llama-4-scout-17b-16e-instruct";
+
+/** Come groqJson, ma con una foto (data URL JPEG) */
+export async function groqVisionJson(system: string, user: string, imageDataUrl: string): Promise<unknown> {
+  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${process.env.GROQ_API_KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: VISION_MODEL,
+      temperature: 0.1,
+      response_format: { type: "json_object" },
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: [{ type: "text", text: user }, { type: "image_url", image_url: { url: imageDataUrl } }] },
+      ],
+    }),
+    signal: AbortSignal.timeout(60_000),
+  });
+  if (res.status === 429) throw new Error("LIMITE");
+  if (!res.ok) throw new Error(`Groq ${res.status}`);
+  const data = (await res.json()) as { choices?: { message?: { content?: string } }[] };
+  return JSON.parse(data.choices?.[0]?.message?.content ?? "{}");
+}
+
+/** Trascrive un vocale in italiano (Whisper su Groq) */
+export async function groqTranscribe(audio: File): Promise<string> {
+  const form = new FormData();
+  form.append("file", audio, audio.name || "vocale.webm");
+  form.append("model", "whisper-large-v3-turbo");
+  form.append("language", "it");
+  const res = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${process.env.GROQ_API_KEY}` },
+    body: form,
+    signal: AbortSignal.timeout(45_000),
+  });
+  if (res.status === 429) throw new Error("LIMITE");
+  if (!res.ok) throw new Error(`Groq ${res.status}`);
+  return String(((await res.json()) as { text?: string }).text ?? "").trim().slice(0, 2000);
+}
